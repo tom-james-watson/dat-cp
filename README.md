@@ -1,5 +1,5 @@
 Dat Copy
-########
+========
 
 Remote file copy, powered by the dat protocol
 
