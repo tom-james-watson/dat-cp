@@ -3,6 +3,8 @@ Dat Copy
 
 Remote file copy, powered by the dat protocol
 
+[![CircleCI](https://circleci.com/gh/tom-james-watson/dat-cp.svg?style=svg)](https://circleci.com/gh/tom-james-watson/dat-cp)
+
 ## Development
 
 Install dependencies:
