@@ -1,0 +1,43 @@
+{
+  "name": "dat-cp",
+  "version": "0.1.0",
+  "description": "Dat Copy - remote file copy, powered by the dat protocol",
+  "scripts": {
+    "eslint": "node_modules/.bin/eslint src test",
+    "build": "babel src -d build",
+    "cli": "babel-node build/cli.js",
+    "test": "mocha --compilers js:babel-core/register --exit && npm run eslint"
+  },
+  "bin": {
+    "dcp": "build/cli.js"
+  },
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ],
+      "stage-1"
+    ]
+  },
+  "author": "Tom Watson <tom@tomjwatson.com>",
+  "license": "MIT",
+  "dependencies": {
+    "minimist": "^1.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^8.2.6",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-1": "^6.24.1",
+    "chai": "^4.1.2",
+    "eslint": "^5.4.0",
+    "eslint-config-tomjwatson": "^0.2.0",
+    "mocha": "^5.2.0"
+  }
+}
