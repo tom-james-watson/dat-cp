@@ -27,8 +27,9 @@
   "author": "Tom Watson <tom@tomjwatson.com>",
   "license": "MIT",
   "dependencies": {
+    "commander": "^2.19.0",
     "dat-node": "^3.5.13",
-    "minimist": "^1.2.0"
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

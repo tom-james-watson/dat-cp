@@ -3,6 +3,7 @@ import nodePath from 'path'
 import {promisify} from 'util'
 import Dat from 'dat-node'
 import checkError from './check-error'
+import logger from './logger'
 
 const fsReaddir = promisify(fs.readdir)
 const fsReadFile = promisify(fs.readFile)
@@ -12,14 +13,18 @@ const fsMkdir = promisify(fs.mkdir)
 
 export default class Dcp {
 
-  connect(options = {}) {
-    console.log('connect', {options})
+  constructor(program, options = {}) {
+    this.program = program
     this.options = options
+  }
+
+  connect() {
     return new Promise((resolve) => {
-      Dat('.', {temp: true, ...options}, async (err, dat) => {
+      Dat('.', {temp: true, ...this.options}, async (err, dat) => {
         checkError(err)
 
         this.dat = dat
+        dat.trackStats()
 
         await this.joinNetwork()
         resolve()
@@ -28,41 +33,41 @@ export default class Dcp {
   }
 
   joinNetwork() {
-    console.log('joinNetwork')
     return new Promise((resolve, reject) => {
+      logger.debug('Connecting to Dat network')
+
+      this.dat.joinNetwork()
 
       if (!this.options.key) {
-        this.dat.joinNetwork()
-        this.dat.network.on('connection', function () {
-          console.log('Connected to peer.')
+        this.dat.network.on('connection', function (connection, info) {
+          logger.debug('Connected to peer.')
         })
         return resolve()
       }
 
-      this.dat.joinNetwork((err) => {
-        checkError(err)
-        console.log('joined network')
+      const abort = setTimeout(() => {
+        logger.error('Failed to connect to any peers.')
+        process.exit(1)
+      }, 15000)
 
-        if (!this.dat.network.connected || !this.dat.network.connecting) {
-          console.error('No peers found for key.')
-          process.exit(1)
+      const connect = setInterval(() => {
+        if (this.dat.stats.peers.complete > 0) {
+          logger.debug('Connected to peer.')
+          clearInterval(connect)
+          clearTimeout(abort)
+          resolve()
         }
-
-        resolve()
-      })
+      }, 300)
     })
   }
 
   async upload(paths) {
-    console.log('upload', {paths})
     for (const path of paths) {
       await this.uploadPath(path, '/')
     }
   }
 
   async uploadPath(path, datPath) {
-    console.log('uploadPath', {path, datPath})
-
     const stats = await fsLstat(path)
 
     if (stats.isFile()) {
@@ -70,12 +75,11 @@ export default class Dcp {
     } else if (stats.isDirectory()) {
       await this.uploadDir(path, datPath)
     } else {
-      console.warn(`Not a file or a directory: ${path}`)
+      logger.warn(`dcp: ${path} is not a file or directory (not copied).`)
     }
   }
 
   mkdir(path) {
-    console.log('mkdir', {path})
     return new Promise((resolve) => {
       this.dat.archive.mkdir(path, (err) => {
         checkError(err)
@@ -85,14 +89,10 @@ export default class Dcp {
   }
 
   uploadFile(path, datPath) {
-    console.log('uploadFile', {path})
     return new Promise(async (resolve) => {
-
       datPath = nodePath.join(datPath, nodePath.parse(path).base)
-
       const data = await fsReadFile(path)
 
-      console.log('datWriteFile', {datPath})
       await this.dat.archive.writeFile(datPath, data, (err) => {
         checkError(err)
         resolve()
@@ -101,11 +101,16 @@ export default class Dcp {
   }
 
   async uploadDir(path, datPath) {
-    console.log('uploadDir', {path})
+    if (!this.program.recursive) {
+      logger.info(`dcp: ${path} is a directory (not copied).`)
+      return
+    }
 
-    datPath = nodePath.join(datPath, nodePath.parse(path).base)
-
-    await this.mkdir(datPath)
+    // If a source dir ends with `/`, copy its contents, not the dir itself
+    if (path[path.length - 1] !== '/') {
+      datPath = nodePath.join(datPath, nodePath.parse(path).base)
+      await this.mkdir(datPath)
+    }
 
     const dirPaths = await fsReaddir(path)
 
@@ -117,14 +122,30 @@ export default class Dcp {
   async download() {
     const paths = await this.readdir('/')
 
+    var stats = this.dat.trackStats()
+
+    stats.on('update', (x, y, z) => {
+      var st = this.dat.stats.get()
+      const network = stats.network
+      const peers = stats.peers
+      // console.log({
+      //   network,
+      //   peers,
+      //   x,
+      //   y,
+      //   z,
+      //   st,
+      //   connecting: this.dat.network.connecting,
+      //   connected: this.dat.network.connected
+      // })
+    })
+
     for (const path of paths) {
       await this.downloadPath(path)
     }
   }
 
   async downloadPath(path) {
-    console.log(`Downloading ${path}`)
-
     const stat = await this.stat(path)
 
     if (stat.isDirectory()) {
@@ -135,7 +156,18 @@ export default class Dcp {
   }
 
   async downloadDir(path) {
-    await fsMkdir(path)
+    // lstat will throw an error if a path does not exist, so rely on that to
+    // know that the dir does not already exist. If the path exists and is not
+    // a directory, error.
+    try {
+      const stats = await fsLstat(path)
+      if (!stats.isDirectory()) {
+        logger.error(`dcp: ${path}: not a directory`)
+        process.exit(1)
+      }
+    } catch (err) {
+      await fsMkdir(path)
+    }
 
     const dirPaths = await this.readdir(path)
 
