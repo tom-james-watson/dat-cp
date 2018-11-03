@@ -5,7 +5,7 @@
   "scripts": {
     "eslint": "node_modules/.bin/eslint src test",
     "build": "babel src -d build",
-    "cli": "babel-node build/cli.js",
+    "cli": "babel-node src/cli.js",
     "test": "mocha --compilers js:babel-core/register --exit && npm run eslint"
   },
   "bin": {
@@ -27,6 +27,7 @@
   "author": "Tom Watson <tom@tomjwatson.com>",
   "license": "MIT",
   "dependencies": {
+    "dat-node": "^3.5.13",
     "minimist": "^1.2.0"
   },
   "devDependencies": {
@@ -37,7 +38,7 @@
     "babel-preset-stage-1": "^6.24.1",
     "chai": "^4.1.2",
     "eslint": "^5.4.0",
-    "eslint-config-tomjwatson": "^0.2.0",
+    "eslint-config-tomjwatson": "^0.2.1",
     "mocha": "^5.2.0"
   }
 }
