@@ -10,6 +10,7 @@
     "test": "mocha --compilers js:babel-core/register --exit && npm run eslint"
   },
   "bin": {
+    "dat-cp": "build/dcp.js",
     "dcp": "build/dcp.js"
   },
   "babel": {
