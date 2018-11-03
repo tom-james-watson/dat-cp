@@ -2,11 +2,11 @@ import fs from 'fs'
 import nodePath from 'path'
 import {promisify} from 'util'
 import Dat from 'dat-node'
+import ProgressBar from 'progress'
 import checkError from './check-error'
 import logger from './logger'
 
 const fsReaddir = promisify(fs.readdir)
-const fsReadFile = promisify(fs.readFile)
 const fsLstat = promisify(fs.lstat)
 const fsWriteFile = promisify(fs.writeFile)
 const fsMkdir = promisify(fs.mkdir)
@@ -40,7 +40,7 @@ export default class Dcp {
 
       if (!this.options.key) {
         this.dat.network.on('connection', function (connection, info) {
-          logger.debug('Connected to peer.')
+          logger.debug('Peer started download.')
         })
         return resolve()
       }
@@ -52,7 +52,7 @@ export default class Dcp {
 
       const connect = setInterval(() => {
         if (this.dat.stats.peers.complete > 0) {
-          logger.debug('Connected to peer.')
+          logger.debug('Connected to upload peer.')
           clearInterval(connect)
           clearTimeout(abort)
           resolve()
@@ -90,11 +90,36 @@ export default class Dcp {
 
   uploadFile(path, datPath) {
     return new Promise(async (resolve) => {
-      datPath = nodePath.join(datPath, nodePath.parse(path).base)
-      const data = await fsReadFile(path)
+      const base = nodePath.parse(path).base
+      datPath = nodePath.join(datPath, base)
 
-      await this.dat.archive.writeFile(datPath, data, (err) => {
-        checkError(err)
+      const stat = await fsLstat(path)
+      const filesize = stat.size || 1
+
+      const width = process.stdout.columns < 100 ? process.stdout.columns / 2 : 40
+      const filename = base.substr(0, width).padEnd(width, ' ')
+      const bar = new ProgressBar(
+        `${filename} [:bar] :percent`,
+        {
+          incomplete: ' ',
+          width: 20,
+          total: filesize
+        }
+      )
+
+      const readStream = fs.createReadStream(path)
+      readStream.on('data', function(buffer) {
+        bar.tick(buffer.length)
+      })
+
+      let writeStream = this.dat.archive.createWriteStream(datPath)
+
+      readStream.pipe(writeStream)
+
+      writeStream.on('finish', () => {
+        if (!bar.complete) {
+          bar.tick(filesize)
+        }
         resolve()
       })
     })
