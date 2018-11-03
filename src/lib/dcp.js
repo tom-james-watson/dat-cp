@@ -8,7 +8,6 @@ import logger from './logger'
 
 const fsReaddir = promisify(fs.readdir)
 const fsLstat = promisify(fs.lstat)
-const fsWriteFile = promisify(fs.writeFile)
 const fsMkdir = promisify(fs.mkdir)
 
 export default class Dcp {
@@ -88,16 +87,11 @@ export default class Dcp {
     })
   }
 
-  uploadFile(path, datPath) {
+  pipeStreams(readStream, writeStream, filesize, filename) {
     return new Promise(async (resolve) => {
-      const base = nodePath.parse(path).base
-      datPath = nodePath.join(datPath, base)
-
-      const stat = await fsLstat(path)
-      const filesize = stat.size || 1
-
       const width = process.stdout.columns < 100 ? process.stdout.columns / 2 : 40
-      const filename = base.substr(0, width).padEnd(width, ' ')
+      filename = filename.substr(0, width).padEnd(width, ' ')
+
       const bar = new ProgressBar(
         `${filename} [:bar] :percent`,
         {
@@ -107,22 +101,31 @@ export default class Dcp {
         }
       )
 
-      const readStream = fs.createReadStream(path)
       readStream.on('data', function(buffer) {
         bar.tick(buffer.length)
       })
-
-      let writeStream = this.dat.archive.createWriteStream(datPath)
 
       readStream.pipe(writeStream)
 
       writeStream.on('finish', () => {
         if (!bar.complete) {
-          bar.tick(filesize)
+          bar.tick(bar.total - bar.curr)
         }
         resolve()
       })
     })
+  }
+
+  async uploadFile(path, datPath) {
+    const filename = nodePath.parse(path).base
+    datPath = nodePath.join(datPath, filename)
+    const stat = await fsLstat(path)
+    const filesize = stat.size || 1
+
+    const readStream = fs.createReadStream(path)
+    const writeStream = this.dat.archive.createWriteStream(datPath)
+
+    await this.pipeStreams(readStream, writeStream, filesize, filename)
   }
 
   async uploadDir(path, datPath) {
@@ -147,24 +150,6 @@ export default class Dcp {
   async download() {
     const paths = await this.readdir('/')
 
-    var stats = this.dat.trackStats()
-
-    stats.on('update', (x, y, z) => {
-      var st = this.dat.stats.get()
-      const network = stats.network
-      const peers = stats.peers
-      // console.log({
-      //   network,
-      //   peers,
-      //   x,
-      //   y,
-      //   z,
-      //   st,
-      //   connecting: this.dat.network.connecting,
-      //   connected: this.dat.network.connected
-      // })
-    })
-
     for (const path of paths) {
       await this.downloadPath(path)
     }
@@ -178,6 +163,19 @@ export default class Dcp {
     } else {
       await this.downloadFile(path)
     }
+  }
+
+  downloadFile(path) {
+    return new Promise((resolve) => {
+      const readStream = this.dat.archive.createReadStream(path)
+      const writeStream = fs.createWriteStream(path)
+      this.dat.archive.stat(path, async (err, stat) => {
+        const filesize = stat.size || 1
+
+        await this.pipeStreams(readStream, writeStream, filesize, path)
+        resolve()
+      })
+    })
   }
 
   async downloadDir(path) {
@@ -199,17 +197,6 @@ export default class Dcp {
     for (const dirPath of dirPaths) {
       await this.downloadPath(nodePath.join(path, dirPath))
     }
-  }
-
-  downloadFile(path) {
-    return new Promise((resolve, reject) => {
-      this.dat.archive.readFile(path, 'utf-8', async (err, data) => {
-        checkError(err)
-
-        await fsWriteFile(path, data)
-        resolve(data)
-      })
-    })
   }
 
   readdir(path) {
