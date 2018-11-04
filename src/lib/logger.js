@@ -1,18 +1,19 @@
-import winston from 'winston'
-
-const logger = winston.createLogger({
-  transports: [
-    new winston.transports.Console({
-      level: 'info'
-    })
-  ],
-  format: winston.format.printf((info) => {
-    if (info.level === 'debug') {
-      return `debug: ${info.message}`
+const logger = {
+  debug: function() {},
+  info: function() {
+    console.log(...arguments)
+  },
+  warn: function() {
+    console.warn(...arguments)
+  },
+  error: function() {
+    console.error(...arguments)
+  },
+  enableDebug: function() {
+    this.debug = function() {
+      console.log('debug:', ...arguments)
     }
-
-    return info.message
-  })
-})
+  }
+}
 
 export default logger

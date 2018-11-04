@@ -20,7 +20,7 @@ if (!process.argv.slice(2).length) {
 }
 
 if (program.verbose) {
-  logger.transports[0].level = 'debug'
+  logger.enableDebug()
 }
 
 if (program.args[0].length === 64) {

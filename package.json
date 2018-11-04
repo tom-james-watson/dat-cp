@@ -1,6 +1,6 @@
 {
   "name": "dat-cp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Dat Copy - remote file copy, powered by the dat protocol",
   "scripts": {
     "build": "babel src -d build",
@@ -31,8 +31,7 @@
   "dependencies": {
     "commander": "^2.19.0",
     "dat-node": "^3.5.13",
-    "progress": "^2.0.1",
-    "winston": "^3.1.0"
+    "progress": "^2.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
