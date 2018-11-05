@@ -1,10 +1,10 @@
-import Dcp from './lib/dcp'
+import DatCp from './lib/dat-cp'
 import logger from './lib/logger'
 
 export default async function send(paths, program) {
-  const dcp = new Dcp(program)
-  await dcp.connect()
-  await dcp.upload(paths)
+  const datCp = new DatCp(program)
+  await datCp.connect()
+  await datCp.upload(paths)
   logger.info('\nPaste files on another machine with:\n')
-  logger.info(`\tdcp ${dcp.dat.key.toString('hex')}\n`)
+  logger.info(`\tdcp ${datCp.dat.key.toString('hex')}\n`)
 }

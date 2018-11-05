@@ -2,15 +2,15 @@ import fs from 'fs'
 import nodePath from 'path'
 import {promisify} from 'util'
 import Dat from 'dat-node'
-import ProgressBar from 'progress'
 import checkError from './check-error'
 import logger from './logger'
+import  pipeStreams from './pipe-streams'
 
 const fsReaddir = promisify(fs.readdir)
 const fsLstat = promisify(fs.lstat)
 const fsMkdir = promisify(fs.mkdir)
 
-export default class Dcp {
+export default class DatCp {
 
   constructor(program, options = {}) {
     this.program = program
@@ -78,44 +78,6 @@ export default class Dcp {
     }
   }
 
-  mkdir(path) {
-    return new Promise((resolve) => {
-      this.dat.archive.mkdir(path, (err) => {
-        checkError(err)
-        resolve()
-      })
-    })
-  }
-
-  pipeStreams(readStream, writeStream, filesize, filename) {
-    return new Promise(async (resolve) => {
-      const width = process.stdout.columns < 100 ? process.stdout.columns / 2 : 40
-      filename = filename.substr(0, width).padEnd(width, ' ')
-
-      const bar = new ProgressBar(
-        `${filename} [:bar] :percent`,
-        {
-          incomplete: ' ',
-          width: 20,
-          total: filesize
-        }
-      )
-
-      readStream.on('data', function(buffer) {
-        bar.tick(buffer.length)
-      })
-
-      readStream.pipe(writeStream)
-
-      writeStream.on('finish', () => {
-        if (!bar.complete) {
-          bar.tick(bar.total - bar.curr)
-        }
-        resolve()
-      })
-    })
-  }
-
   async uploadFile(path, datPath) {
     const filename = nodePath.parse(path).base
     datPath = nodePath.join(datPath, filename)
@@ -125,7 +87,7 @@ export default class Dcp {
     const readStream = fs.createReadStream(path)
     const writeStream = this.dat.archive.createWriteStream(datPath)
 
-    await this.pipeStreams(readStream, writeStream, filesize, filename)
+    await pipeStreams(readStream, writeStream, filesize, filename)
   }
 
   async uploadDir(path, datPath) {
@@ -147,6 +109,15 @@ export default class Dcp {
     }
   }
 
+  mkdir(path) {
+    return new Promise((resolve) => {
+      this.dat.archive.mkdir(path, (err) => {
+        checkError(err)
+        resolve()
+      })
+    })
+  }
+
   async download() {
     const paths = await this.readdir('/')
 
@@ -165,17 +136,13 @@ export default class Dcp {
     }
   }
 
-  downloadFile(path) {
-    return new Promise((resolve) => {
-      const readStream = this.dat.archive.createReadStream(path)
-      const writeStream = fs.createWriteStream(path)
-      this.dat.archive.stat(path, async (err, stat) => {
-        const filesize = stat.size || 1
+  async downloadFile(path) {
+    const readStream = this.dat.archive.createReadStream(path)
+    const writeStream = fs.createWriteStream(path)
+    const stat = await this.stat(path)
+    const filesize = stat.size || 1
 
-        await this.pipeStreams(readStream, writeStream, filesize, path)
-        resolve()
-      })
-    })
+    await pipeStreams(readStream, writeStream, filesize, path)
   }
 
   async downloadDir(path) {
