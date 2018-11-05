@@ -79,15 +79,14 @@ export default class DatCp {
   }
 
   async uploadFile(path, datPath) {
-    const filename = nodePath.parse(path).base
-    datPath = nodePath.join(datPath, filename)
+    datPath = nodePath.join(datPath, nodePath.parse(path).base)
     const stat = await fsLstat(path)
     const filesize = stat.size || 1
 
     const readStream = fs.createReadStream(path)
     const writeStream = this.dat.archive.createWriteStream(datPath)
 
-    await pipeStreams(readStream, writeStream, filesize, filename)
+    await pipeStreams(readStream, writeStream, filesize, datPath)
   }
 
   async uploadDir(path, datPath) {

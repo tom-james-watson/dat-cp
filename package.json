@@ -1,6 +1,6 @@
 {
   "name": "dat-cp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Dat Copy - remote file copy, powered by the dat protocol",
   "scripts": {
     "build": "babel src -d build",

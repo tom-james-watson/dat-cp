@@ -1,12 +1,12 @@
 import ProgressBar from 'progress'
 
-export default function pipeStreams(readStream, writeStream, filesize, filename) {
+export default function pipeStreams(readStream, writeStream, filesize, label) {
   return new Promise(async (resolve) => {
-    const width = process.stdout.columns < 100 ? process.stdout.columns / 2 : 40
-    filename = filename.substr(0, width).padEnd(width, ' ')
+    const width = process.stdout.columns < 100 ? process.stdout.columns - 30 : 50
+    label = label.substr(0, width).padEnd(width, ' ')
 
     const bar = new ProgressBar(
-      `${filename} [:bar] :percent`,
+      `${label} [:bar] :percent`,
       {
         incomplete: ' ',
         width: 20,
