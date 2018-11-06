@@ -61,9 +61,67 @@ export default class DatCp {
   }
 
   async upload(paths) {
+    await this.ensurePathsValid(paths)
+
     for (const path of paths) {
       await this.uploadPath(path, '/')
     }
+  }
+
+  async ensurePathsValid(paths) {
+    let count = 0
+
+    for (const path of paths) {
+      count += await this.ensurePathValid(path)
+    }
+
+    if (!count) {
+      logger.error(`dcp: No files to copy.`)
+      process.exit(1)
+    }
+  }
+
+  async ensurePathValid(path) {
+    let stat
+
+    try {
+      stat = await fsLstat(path)
+    } catch (err) {
+      logger.error(`dcp: ${path}: No such file or directory.`)
+      process.exit(1)
+    }
+
+    if (stat.isFile()) {
+      return 1
+    }
+
+    if (stat.isDirectory()) {
+      return await this.ensureDirValid(path)
+    }
+
+    logger.error(`dcp: ${path}: Not a file or directory (not copied).`)
+    return 0
+  }
+
+  async ensureDirValid(path) {
+    if (!this.program.recursive) {
+      logger.warn(`dcp: ${path}: Is a directory (not copied).`)
+      return 0
+    }
+
+    let count = 0
+
+    if (path[path.length - 1] !== '/') {
+      count += 1
+    }
+
+    const dirPaths = await fsReaddir(path)
+
+    for (const dirPath of dirPaths) {
+      count += await this.ensurePathValid(nodePath.join(path, dirPath))
+    }
+
+    return count
   }
 
   async uploadPath(path, datPath) {
@@ -73,8 +131,6 @@ export default class DatCp {
       await this.uploadFile(path, datPath)
     } else if (stats.isDirectory()) {
       await this.uploadDir(path, datPath)
-    } else {
-      logger.warn(`dcp: ${path} is not a file or directory (not copied).`)
     }
   }
 
@@ -91,7 +147,6 @@ export default class DatCp {
 
   async uploadDir(path, datPath) {
     if (!this.program.recursive) {
-      logger.info(`dcp: ${path} is a directory (not copied).`)
       return
     }
 
@@ -151,7 +206,7 @@ export default class DatCp {
     try {
       const stats = await fsLstat(path)
       if (!stats.isDirectory()) {
-        logger.error(`dcp: ${path}: not a directory`)
+        logger.error(`dcp: ${path}: Not a directory`)
         process.exit(1)
       }
     } catch (err) {
