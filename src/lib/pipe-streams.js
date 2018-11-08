@@ -11,7 +11,7 @@ export default function pipeStreams(readStream, writeStream, filesize, label) {
       if (bytes === 0) {
         return '0B'
       }
-      return parseFloat((bytes / Math.pow(1024, sizeMag)).toFixed(2))
+      return (bytes / Math.pow(1024, sizeMag)).toFixed(2)
     }
 
     const labelWidth = (process.stdout.columns / 3).toFixed()
