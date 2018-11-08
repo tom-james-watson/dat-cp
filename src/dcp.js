@@ -6,6 +6,18 @@ import logger from './lib/logger'
 import receive from './receive'
 import pkgJson from '../package.json'
 
+program.on('--help', function() {
+  console.log('\nExample:')
+  console.log('\n    Machine A:')
+  console.log(`
+        > dcp foo.txt bar.txt
+  `)
+  console.log('    Machine B:')
+  console.log(`
+        > dcp <generated public key>
+  `)
+})
+
 program
   .version(pkgJson.version)
   .usage('[options] {source ... | key}')
