@@ -14,6 +14,7 @@ export default class DatCp {
 
   connect() {
     return new Promise((resolve) => {
+      logger.debug('Creating dat archive.')
       Dat('.', {temp: true, ...this.options}, async (err, dat) => {
         checkError(err)
 
@@ -28,7 +29,7 @@ export default class DatCp {
 
   joinNetwork() {
     return new Promise((resolve, reject) => {
-      logger.debug('Connecting to Dat network')
+      logger.debug('Connecting to dat network.')
 
       this.dat.joinNetwork()
 
@@ -40,7 +41,7 @@ export default class DatCp {
       }
 
       const abort = setTimeout(() => {
-        logger.error('Failed to connect to any peers.')
+        logger.error('dcp: Failed to connect to any peers.')
         process.exit(1)
       }, 15000)
 
@@ -58,6 +59,7 @@ export default class DatCp {
   async upload(paths) {
     await this.ensurePathsValid(paths)
 
+    logger.debug('Creating metadata for files:')
     for (const path of paths) {
       await this.uploadPath(path, '/')
     }
