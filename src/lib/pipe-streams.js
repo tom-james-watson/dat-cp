@@ -1,19 +1,28 @@
 import ProgressBar from 'progress'
+import chalk from 'chalk'
 
 export default function pipeStreams(readStream, writeStream, filesize, label) {
   return new Promise(async (resolve) => {
 
-    const labelWidth = ((process.stdout.columns / 3) * 2 - 5).toFixed()
-    const barWidth = (process.stdout.columns / 3 - 5).toFixed()
+    const labelWidth = ((process.stdout.columns / 5) * 2).toFixed()
+    const barWidth = ((process.stdout.columns / 5) * 1.5).toFixed()
 
     label = label.substr(0, labelWidth).padEnd(labelWidth, ' ')
 
+    // const  style = 'downloading [' + chalk.magenta(':bar') + '] :rate/bps ' + chalk.green(':percent') + ' :etas'
+    let style = `${label} [${chalk.green(':bar')}] ${chalk.magenta(':percent')}`
+
+    if (process.stdout.columns > 100) {
+      style += chalk.magenta(' :totalB :elapseds')
+    }
+
     const bar = new ProgressBar(
-      `${label} [:bar] :percent`,
+      style,
       {
         incomplete: ' ',
-        width: barWidth,
-        total: filesize
+        total: filesize,
+        renderThrottle: 0,
+        width: barWidth
       }
     )
 
@@ -24,9 +33,6 @@ export default function pipeStreams(readStream, writeStream, filesize, label) {
     readStream.pipe(writeStream)
 
     writeStream.on('finish', () => {
-      if (!bar.complete) {
-        bar.tick(bar.total - bar.curr)
-      }
       resolve()
     })
   })
