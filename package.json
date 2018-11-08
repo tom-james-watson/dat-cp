@@ -2,6 +2,9 @@
   "name": "dat-cp",
   "version": "0.2.0",
   "description": "Dat Copy - remote file copy, powered by the dat protocol",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "scripts": {
     "build": "babel src -d build",
     "cli": "babel-node src/dcp.js",

@@ -7,8 +7,6 @@ Remote file copy, powered by the dat protocol
 
 ## Installation
 
-**Requires node >= 8**
-
 ```
 npm i -g dat-cp
 ```

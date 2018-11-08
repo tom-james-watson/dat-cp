@@ -1,14 +1,9 @@
-import fs from 'fs'
+import fs from './fs'
 import nodePath from 'path'
-import {promisify} from 'util'
 import Dat from 'dat-node'
 import checkError from './check-error'
 import logger from './logger'
-import  pipeStreams from './pipe-streams'
-
-const fsReaddir = promisify(fs.readdir)
-const fsLstat = promisify(fs.lstat)
-const fsMkdir = promisify(fs.mkdir)
+import pipeStreams from './pipe-streams'
 
 export default class DatCp {
 
@@ -85,7 +80,7 @@ export default class DatCp {
     let stat
 
     try {
-      stat = await fsLstat(path)
+      stat = await fs.lstat(path)
     } catch (err) {
       logger.error(`dcp: ${path}: No such file or directory.`)
       process.exit(1)
@@ -115,7 +110,7 @@ export default class DatCp {
       count += 1
     }
 
-    const dirPaths = await fsReaddir(path)
+    const dirPaths = await fs.readdir(path)
 
     for (const dirPath of dirPaths) {
       count += await this.ensurePathValid(nodePath.join(path, dirPath))
@@ -125,7 +120,7 @@ export default class DatCp {
   }
 
   async uploadPath(path, datPath) {
-    const stats = await fsLstat(path)
+    const stats = await fs.lstat(path)
 
     if (stats.isFile()) {
       await this.uploadFile(path, datPath)
@@ -136,7 +131,7 @@ export default class DatCp {
 
   async uploadFile(path, datPath) {
     datPath = nodePath.join(datPath, nodePath.parse(path).base)
-    const stat = await fsLstat(path)
+    const stat = await fs.lstat(path)
     const filesize = stat.size || 1
 
     const readStream = fs.createReadStream(path)
@@ -156,7 +151,7 @@ export default class DatCp {
       await this.mkdir(datPath)
     }
 
-    const dirPaths = await fsReaddir(path)
+    const dirPaths = await fs.readdir(path)
 
     for (const dirPath of dirPaths) {
       await this.uploadPath(nodePath.join(path, dirPath), datPath)
@@ -204,13 +199,13 @@ export default class DatCp {
     // know that the dir does not already exist. If the path exists and is not
     // a directory, error.
     try {
-      const stats = await fsLstat(path)
+      const stats = await fs.lstat(path)
       if (!stats.isDirectory()) {
         logger.error(`dcp: ${path}: Not a directory`)
         process.exit(1)
       }
     } catch (err) {
-      await fsMkdir(path)
+      await fs.mkdir(path)
     }
 
     const dirPaths = await this.readdir(path)
