@@ -1,2 +1,5 @@
 src
 package-lock.json
+test
+.circleci
+.eslintrc

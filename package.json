@@ -1,6 +1,6 @@
 {
   "name": "dat-cp",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Dat Copy - remote file copy, powered by the dat protocol",
   "engines": {
     "node": ">=6.0.0"
@@ -32,9 +32,10 @@
   "author": "Tom Watson <tom@tomjwatson.com>",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^2.4.1",
+    "cli-progress": "^2.1.0",
     "commander": "^2.19.0",
-    "dat-node": "^3.5.13",
-    "progress": "^2.0.1"
+    "dat-node": "^3.5.13"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

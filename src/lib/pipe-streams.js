@@ -1,38 +1,44 @@
-import ProgressBar from 'progress'
+import cliProgress from 'cli-progress'
 import chalk from 'chalk'
 
 export default function pipeStreams(readStream, writeStream, filesize, label) {
   return new Promise(async (resolve) => {
 
-    const labelWidth = ((process.stdout.columns / 5) * 2).toFixed()
-    const barWidth = ((process.stdout.columns / 5) * 1.5).toFixed()
+    const sizeMags = ['B', 'KB', 'MB', 'GB']
+    const sizeMag = Math.floor(Math.log(filesize) / Math.log(1024))
 
-    label = label.substr(0, labelWidth).padEnd(labelWidth, ' ')
-
-    // const  style = 'downloading [' + chalk.magenta(':bar') + '] :rate/bps ' + chalk.green(':percent') + ' :etas'
-    let style = `${label} [${chalk.green(':bar')}] ${chalk.magenta(':percent')}`
-
-    if (process.stdout.columns > 100) {
-      style += chalk.magenta(' :totalB :elapseds')
+    function formatSize(bytes) {
+      if (bytes === 0) {
+        return '0B'
+      }
+      return parseFloat((bytes / Math.pow(1024, sizeMag)).toFixed(2))
     }
 
-    const bar = new ProgressBar(
-      style,
-      {
-        incomplete: ' ',
-        total: filesize,
-        renderThrottle: 0,
-        width: barWidth
-      }
-    )
+    const labelWidth = (process.stdout.columns / 3).toFixed()
+    label = label.substr(0, labelWidth).padEnd(labelWidth, ' ')
+
+    const progress = new cliProgress.Bar({
+      format: `${label} [${chalk.green('{bar}')}] {percentage}% | {duration_formatted} | {transfer} {sizeMag}`,
+    }, cliProgress.Presets.legacy)
+
+    progress.start(filesize, 0, {
+      transfer: `${formatSize(0)} / ${formatSize(filesize)}`,
+      sizeMag: sizeMags[sizeMag]
+    })
 
     readStream.on('data', function(buffer) {
-      bar.tick(buffer.length)
+      progress.increment(buffer.length, {
+        transfer: `${formatSize(progress.value)} / ${formatSize(filesize)}`,
+      })
     })
 
     readStream.pipe(writeStream)
 
     writeStream.on('finish', () => {
+      progress.update(filesize, {
+        transfer: formatSize(filesize),
+      })
+      progress.stop()
       resolve()
     })
   })
