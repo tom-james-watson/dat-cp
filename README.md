@@ -1,9 +1,12 @@
-Dat Copy
+dcp - Dat Copy
 ========
 
-Remote file copy, powered by the dat protocol
+Remote file copy, powered by the dat protocol.
 
-[![CircleCI](https://circleci.com/gh/tom-james-watson/dat-cp.svg?style=svg)](https://circleci.com/gh/tom-james-watson/dat-cp)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/tom-james-watson/dat-cp/master.svg)](https://circleci.com/gh/tom-james-watson/workflows/dat-cp/tree/master)
+[![npm](https://img.shields.io/npm/v/dat-cp.svg)](https://www.npmjs.com/package/dat-cp)
+[![npm](https://img.shields.io/node/v/dat-cp.svg)](https://www.npmjs.com/package/dat-cp)
+[![NpmLicense](https://img.shields.io/npm/l/dat-cp.svg)](https://www.npmjs.com/package/dat-cp)
 
 ## Installation
 
