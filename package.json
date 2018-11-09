@@ -1,6 +1,6 @@
 {
   "name": "dat-cp",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Dat Copy - remote file copy, powered by the dat protocol",
   "engines": {
     "node": ">=6.0.0"

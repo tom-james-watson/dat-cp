@@ -34,9 +34,6 @@ export default class DatCp {
       this.dat.joinNetwork()
 
       if (!this.options.key) {
-        this.dat.network.on('connection', function (connection, info) {
-          logger.debug('Peer started download.')
-        })
         return resolve()
       }
 
@@ -203,7 +200,7 @@ export default class DatCp {
     try {
       const stats = await fs.lstat(path)
       if (!stats.isDirectory()) {
-        logger.error(`dcp: ${path}: Not a directory`)
+        logger.error(`dcp: ${path}: Not a directory.`)
         process.exit(1)
       }
     } catch (err) {
