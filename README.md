@@ -1,22 +1,24 @@
-dcp - Dat Copy
+`dcp` - Dat Copy
 ========
 
-Remote file copy, powered by the dat protocol.
+> Remote file copy, powered by the Dat protocol.
 
 [![CircleCI branch](https://img.shields.io/circleci/project/github/tom-james-watson/dat-cp/master.svg)](https://circleci.com/gh/tom-james-watson/workflows/dat-cp/tree/master)
 [![npm](https://img.shields.io/npm/v/dat-cp.svg)](https://www.npmjs.com/package/dat-cp)
 [![npm](https://img.shields.io/node/v/dat-cp.svg)](https://www.npmjs.com/package/dat-cp)
 [![NpmLicense](https://img.shields.io/npm/l/dat-cp.svg)](https://www.npmjs.com/package/dat-cp)
 
-## Installation
+`dcp` copies files between hosts on a network using the peer-to-peer [Dat network](https://datproject.org/). `dcp` can be seen as an alternative to tools like `scp`, removing the need to configure SSH access between hosts. This lets you transfer files between two remote hosts, without you needing to worry about the specifics of how said hosts reach each other.
 
-```
-npm i -g dat-cp
-```
+`dcp` requires zero configuration and is secure, fast, and peer-to-peer.
 
-## Usage
+### How `dcp` works
 
-Machine A:
+`dcp` will create a dat archive for a specified set of files or directories and, using the generated public key, lets you download said archive from a second host. Any data shared in the network is encrypted using the public key of the archive, meaning data access is limited to those who have access to said key. For more information on how Dat works, you can browse [the docs](https://docs.datproject.org/) or [read their whitepaper](https://github.com/datproject/docs/blob/master/papers/dat-paper.pdf).
+
+## Example
+
+Host A:
 
 ```
 > dcp foo.txt bar.txt
@@ -28,7 +30,7 @@ Paste files on another machine with:
         dcp 9dc72a82af84b79208fb2fd0c757c52b00a26d081722f9c6f3c6c389d5a4c963
 ```
 
-Machine B:
+Host B:
 
 ```
 > dcp 9dc72a82af84b79208fb2fd0c757c52b00a26d081722f9c6f3c6c389d5a4c963
