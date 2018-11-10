@@ -12,7 +12,7 @@ function formatSize(bytes, options={}) {
   const unit = options.unit || getUnit(bytes)
 
   if (bytes === 0) {
-    return options.unit === undefined ? '0 B' : '0'
+    return options.unit === undefined ? '0B' : '0'
   }
 
   let size = (bytes / Math.pow(1024, unit)).toFixed(2)

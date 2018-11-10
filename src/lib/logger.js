@@ -1,13 +1,15 @@
+import chalk from 'chalk'
+
 const logger = {
   debug: function() {},
   info: function() {
     console.log(...arguments)
   },
   warn: function() {
-    console.warn(...arguments)
+    console.warn(`dcp ${chalk.yellow('WARN')}`, ...arguments)
   },
   error: function() {
-    console.error(...arguments)
+    console.error(`dcp ${chalk.red('ERR')}`, ...arguments)
   },
   enableDebug: function() {
     this.debug = function() {

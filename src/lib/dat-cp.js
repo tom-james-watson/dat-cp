@@ -4,17 +4,21 @@ import Dat from 'dat-node'
 import checkError from './check-error'
 import logger from './logger'
 import pipeStreams from './pipe-streams'
+import {formatSize} from './format-size'
 
 export default class DatCp {
 
   constructor(program, options = {}) {
     this.program = program
     this.options = options
+    this.files = 0
+    this.totalSize = 0
   }
 
   connect() {
     return new Promise((resolve) => {
       logger.debug('Creating dat archive.')
+
       Dat('.', {temp: true, ...this.options}, async (err, dat) => {
         checkError(err)
 
@@ -38,7 +42,7 @@ export default class DatCp {
       }
 
       const abort = setTimeout(() => {
-        logger.error('dcp: Failed to connect to any peers.')
+        logger.error('Failed to connect to any peers.')
         process.exit(1)
       }, 15000)
 
@@ -56,66 +60,70 @@ export default class DatCp {
   async upload(paths) {
     await this.ensurePathsValid(paths)
 
+    if (this.program.dryRun) {
+      this.printTotal()
+      process.exit(0)
+    }
+
     logger.debug('Creating metadata for files:')
     for (const path of paths) {
       await this.uploadPath(path, '/')
     }
+
+    this.printTotal()
   }
 
   async ensurePathsValid(paths) {
-    let count = 0
+    this.count = 0
 
     for (const path of paths) {
-      count += await this.ensurePathValid(path)
+      await this.ensurePathValid(path)
     }
 
-    if (!count) {
-      logger.error(`dcp: No files to copy.`)
+    if (!this.files) {
+      logger.error(`No files to copy.`)
       process.exit(1)
     }
   }
 
   async ensurePathValid(path) {
-    let stat
+    let stats
 
     try {
-      stat = await fs.lstat(path)
+      stats = await fs.lstat(path)
     } catch (err) {
-      logger.error(`dcp: ${path}: No such file or directory.`)
+      logger.error(`${path}: No such file or directory.`)
       process.exit(1)
     }
 
-    if (stat.isFile()) {
-      return 1
+    if (stats.isFile()) {
+      this.countPath(path, stats)
+      return
     }
 
-    if (stat.isDirectory()) {
-      return await this.ensureDirValid(path)
+    if (stats.isDirectory()) {
+      return await this.ensureDirValid(path, stats)
     }
 
-    logger.error(`dcp: ${path}: Not a file or directory (not copied).`)
-    return 0
+    logger.warn(`${path}: Not a file or directory (not copied).`)
+    return
   }
 
-  async ensureDirValid(path) {
+  async ensureDirValid(path, stats) {
     if (!this.program.recursive) {
-      logger.warn(`dcp: ${path}: Is a directory (not copied).`)
-      return 0
+      logger.warn(`${path}: Is a directory (not copied).`)
+      return
     }
 
-    let count = 0
-
     if (path[path.length - 1] !== '/') {
-      count += 1
+      this.countPath(path, stats)
     }
 
     const dirPaths = await fs.readdir(path)
 
     for (const dirPath of dirPaths) {
-      count += await this.ensurePathValid(nodePath.join(path, dirPath))
+      await this.ensurePathValid(nodePath.join(path, dirPath))
     }
-
-    return count
   }
 
   async uploadPath(path, datPath) {
@@ -130,8 +138,8 @@ export default class DatCp {
 
   async uploadFile(path, datPath) {
     datPath = nodePath.join(datPath, nodePath.parse(path).base)
-    const stat = await fs.lstat(path)
-    const filesize = stat.size || 1
+    const stats = await fs.lstat(path)
+    const filesize = stats.size || 1
 
     const readStream = fs.createReadStream(path)
     const writeStream = this.dat.archive.createWriteStream(datPath)
@@ -172,46 +180,80 @@ export default class DatCp {
     for (const path of paths) {
       await this.downloadPath(path)
     }
+
+    this.printTotal()
   }
 
   async downloadPath(path) {
-    const stat = await this.stat(path)
+    const stats = await this.stat(path)
 
-    if (stat.isDirectory()) {
-      await this.downloadDir(path)
+    if (stats.isDirectory()) {
+      await this.downloadDir(path, stats)
     } else {
-      await this.downloadFile(path)
+      await this.downloadFile(path, stats)
     }
   }
 
-  async downloadFile(path) {
+  async downloadFile(path, stats) {
+    this.countPath(path, stats)
+
+    if (this.program.dryRun) {
+      return
+    }
+
     const readStream = this.dat.archive.createReadStream(path)
     const writeStream = fs.createWriteStream(path)
-    const stat = await this.stat(path)
-    const filesize = stat.size || 1
+    const filesize = stats.size || 1
 
     await pipeStreams(readStream, writeStream, filesize, path)
   }
 
-  async downloadDir(path) {
-    // lstat will throw an error if a path does not exist, so rely on that to
-    // know that the dir does not already exist. If the path exists and is not
-    // a directory, error.
-    try {
-      const stats = await fs.lstat(path)
-      if (!stats.isDirectory()) {
-        logger.error(`dcp: ${path}: Not a directory.`)
-        process.exit(1)
+  async downloadDir(path, stats) {
+    if (!this.program.dryRun) {
+      // lstat will throw an error if a path does not exist, so rely on that to
+      // know that the dir does not already exist. If the path exists and is not
+      // a directory, error.
+      try {
+        const stats = await fs.lstat(path)
+        if (!stats.isDirectory()) {
+          logger.error(`${path}: Not a directory.`)
+          process.exit(1)
+        }
+      } catch (err) {
+        await fs.mkdir(path)
       }
-    } catch (err) {
-      await fs.mkdir(path)
     }
+
+    this.countPath(path, stats)
 
     const dirPaths = await this.readdir(path)
 
     for (const dirPath of dirPaths) {
       await this.downloadPath(nodePath.join(path, dirPath))
     }
+  }
+
+  countPath(path, stats) {
+    if (path === '.') {
+      return
+    }
+
+    this.files += 1
+    this.totalSize += stats.size
+
+    if (!this.program.dryRun) {
+      return
+    }
+
+    if (stats.isFile()) {
+      logger.info(`${formatSize(stats.size).padEnd(8)} ${path}`)
+    } else if (stats.isDirectory()) {
+      logger.info(`${'-'.padEnd(8)} ${path}`)
+    }
+  }
+
+  printTotal() {
+    logger.info(`\nTotal: ${this.files} files (${formatSize(this.totalSize)})`)
   }
 
   readdir(path) {
@@ -225,9 +267,9 @@ export default class DatCp {
 
   stat(path) {
     return new Promise((resolve, reject) => {
-      this.dat.archive.stat(path, (err, stat) => {
+      this.dat.archive.stat(path, (err, stats) => {
         checkError(err)
-        resolve(stat)
+        resolve(stats)
       })
     })
   }

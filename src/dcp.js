@@ -22,8 +22,9 @@ program
   .version(pkgJson.version)
   .usage('[options] {source ... | key}')
   .description('Dat Copy - remote file copy, powered by the dat protocol.')
-  .option('-r, --recursive', 'Recursively copy entire directories')
-  .option('-v, --verbose', 'Verbose mode. Causes dcp to print debugging messages about its progress')
+  .option('-r, --recursive', 'recursively copy directories')
+  .option('-n, --dry-run', 'show what files would have been copied')
+  .option('-v, --verbose', 'verbose mode - prints extra debugging messages')
   .parse(process.argv)
 
 if (!process.argv.slice(2).length) {
