@@ -27,7 +27,7 @@ program
   .option('-v, --verbose', 'verbose mode - prints extra debugging messages')
   .parse(process.argv)
 
-if (!process.argv.slice(2).length) {
+if (!process.argv.slice(2).length || !program.args.length) {
   program.outputHelp()
   process.exit(1)
 }
