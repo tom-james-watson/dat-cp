@@ -57,9 +57,8 @@ describe('Send', function() {
     await sendDatCp.upload(['test/fixtures/simple/hello.txt'])
 
     expect(sendDatCp.files).to.equal(1)
-    expect(sendDatCp.totalSize).to.equal(14)
 
-    expect(this.infoSpy.calledWith('\nTotal: 1 files (14.00B)')).to.be.true
+    expect(this.infoSpy.firstCall.args[0].includes('Total: 1 files')).to.be.true
     expect(this.exitSpy.called).to.be.false
   })
 
@@ -73,8 +72,8 @@ describe('Send', function() {
       } catch (e) {
         expect(e).to.equal('exit')
         expect(sendDatCp.files).to.equal(1)
-        expect(sendDatCp.totalSize).to.equal(14)
-        expect(this.infoSpy.calledWith('\nTotal: 1 files (14.00B)')).to.be.true
+        expect(this.infoSpy.firstCall.args[0].includes('test/fixtures/simple/hello.txt')).to.be.true
+        expect(this.infoSpy.secondCall.args[0].includes('Total: 1 files')).to.be.true
         expect(this.exitSpy.calledOnceWith(0)).to.be.true
         done()
       }
@@ -103,9 +102,8 @@ describe('Send', function() {
     await sendDatCp.upload(['test/fixtures/dirs/dir1'])
 
     expect(sendDatCp.files).to.equal(2)
-    expect(sendDatCp.totalSize).to.equal(110)
 
-    expect(this.infoSpy.calledWith('\nTotal: 2 files (110.00B)')).to.be.true
+    expect(this.infoSpy.firstCall.args[0].includes('Total: 2 files')).to.be.true
     expect(this.exitSpy.called).to.be.false
   })
 
@@ -115,9 +113,8 @@ describe('Send', function() {
     await sendDatCp.upload(['test/fixtures/dirs'])
 
     expect(sendDatCp.files).to.equal(7)
-    expect(sendDatCp.totalSize).to.equal(471)
 
-    expect(this.infoSpy.calledWith('\nTotal: 7 files (471.00B)')).to.be.true
+    expect(this.infoSpy.firstCall.args[0].includes('Total: 7 files')).to.be.true
     expect(this.exitSpy.called).to.be.false
   })
 
@@ -127,9 +124,8 @@ describe('Send', function() {
     await sendDatCp.upload(['test/fixtures/dirs/'])
 
     expect(sendDatCp.files).to.equal(6)
-    expect(sendDatCp.totalSize).to.equal(343)
 
-    expect(this.infoSpy.calledWith('\nTotal: 6 files (343.00B)')).to.be.true
+    expect(this.infoSpy.firstCall.args[0].includes('Total: 6 files')).to.be.true
     expect(this.exitSpy.called).to.be.false
   })
 
@@ -143,8 +139,7 @@ describe('Send', function() {
       } catch (e) {
         expect(e).to.equal('exit')
         expect(sendDatCp.files).to.equal(7)
-        expect(sendDatCp.totalSize).to.equal(471)
-        expect(this.infoSpy.calledWith('\nTotal: 7 files (471.00B)')).to.be.true
+        expect(this.infoSpy.lastCall.args[0].includes('Total: 7 files')).to.be.true
         expect(this.exitSpy.calledOnceWith(0)).to.be.true
         done()
       }
@@ -157,9 +152,8 @@ describe('Send', function() {
     await sendDatCp.upload(['test/fixtures/dirs/dir2/foo.txt', 'test/fixtures/dirs/dir2/dir3'])
 
     expect(sendDatCp.files).to.equal(1)
-    expect(sendDatCp.totalSize).to.equal(4)
 
-    expect(this.infoSpy.calledWith('\nTotal: 1 files (4.00B)')).to.be.true
+    expect(this.infoSpy.firstCall.args[0].includes('Total: 1 files')).to.be.true
     expect(this.warnSpy.calledWith(
       'test/fixtures/dirs/dir2/dir3: Is a directory (not copied).'
     )).to.be.true
@@ -173,9 +167,8 @@ describe('Send', function() {
     await sendDatCp.upload(['test/fixtures/complex'])
 
     expect(sendDatCp.files).to.equal(2)
-    expect(sendDatCp.totalSize).to.equal(142)
 
-    expect(this.infoSpy.calledWith('\nTotal: 2 files (142.00B)')).to.be.true
+    expect(this.infoSpy.firstCall.args[0].includes('Total: 2 files')).to.be.true
     expect(this.warnSpy.calledWith(
       'test/fixtures/complex/link: Not a file or directory (not copied).'
     )).to.be.true
