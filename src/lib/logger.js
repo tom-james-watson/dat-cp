@@ -13,7 +13,7 @@ const logger = {
   },
   enableDebug: function() {
     this.debug = function() {
-      console.log('debug:', ...arguments)
+      console.log(`dcp ${chalk.blue('DEBUG')}`, ...arguments)
     }
   }
 }

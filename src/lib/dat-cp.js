@@ -1,7 +1,6 @@
 import fs from './fs'
 import nodePath from 'path'
 import Dat from 'dat-node'
-import checkError from './check-error'
 import logger from './logger'
 import pipeStreams from './pipe-streams'
 import {formatSize} from './format-size'
@@ -20,7 +19,11 @@ export default class DatCp {
       logger.debug('Creating dat archive.')
 
       Dat('.', {temp: true, ...this.options}, async (err, dat) => {
-        checkError(err)
+        if (err) {
+          logger.debug(err)
+          logger.error(`Failed to initialize dat archive.`)
+          process.exit(1)
+        }
 
         this.dat = dat
         dat.trackStats()
@@ -168,7 +171,11 @@ export default class DatCp {
   mkdir(path) {
     return new Promise((resolve) => {
       this.dat.archive.mkdir(path, (err) => {
-        checkError(err)
+        if (err) {
+          logger.debug(err)
+          logger.error(`${path}: Failed to create directory in dat archive.`)
+          process.exit(1)
+        }
         resolve()
       })
     })
@@ -259,7 +266,11 @@ export default class DatCp {
   readdir(path) {
     return new Promise((resolve, reject) => {
       this.dat.archive.readdir(path, async (err, paths) => {
-        checkError(err)
+        if (err) {
+          logger.debug(err)
+          logger.error(`${path}: Failed to read from dat archive.`)
+          process.exit(1)
+        }
         resolve(paths)
       })
     })
@@ -268,7 +279,11 @@ export default class DatCp {
   stat(path) {
     return new Promise((resolve, reject) => {
       this.dat.archive.stat(path, (err, stats) => {
-        checkError(err)
+        if (err) {
+          logger.debug(err)
+          logger.error(`${path}: Failed to get stats from dat archive.`)
+          process.exit(1)
+        }
         resolve(stats)
       })
     })
