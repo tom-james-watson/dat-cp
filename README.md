@@ -29,7 +29,7 @@ Host A:
 foo.txt                                  [====================] 100%
 bar.txt                                  [====================] 100%
 
-Paste files on another machine with:
+Paste files on another host with:
 
         dcp 9dc72a82af84b79208fb2fd0c757c52b00a26d081722f9c6f3c6c389d5a4c963
 ```

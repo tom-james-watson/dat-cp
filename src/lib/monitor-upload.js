@@ -4,7 +4,7 @@ import {formatSize} from './format-size'
 export default function monitorUploads(dat) {
 
   const progress = new cliProgress.Bar({
-    format: `Uploaded: {uploadTotal} | Upload Speed: {uploadSpeed}/s`,
+    format: `Upload: {uploadTotal} ({uploadSpeed}/s)`,
   }, cliProgress.Presets.legacy)
 
   progress.start(0, 0, {
