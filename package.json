@@ -10,7 +10,7 @@
     "cli": "babel-node src/dcp.js",
     "eslint": "node_modules/.bin/eslint src test",
     "prepublish": "npm run build",
-    "test": "mocha --compilers js:babel-core/register --exit && npm run eslint"
+    "test": "mocha --require babel-core/register --exit && npm run eslint"
   },
   "bin": {
     "dat-cp": "build/dcp.js",
@@ -46,6 +46,7 @@
     "chai": "^4.1.2",
     "eslint": "^5.4.0",
     "eslint-config-tomjwatson": "^0.2.1",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "sinon": "^7.1.1"
   }
 }

@@ -18,6 +18,8 @@ program.on('--help', function() {
   `)
 })
 
+console.log(process.argv)
+
 program
   .version(pkgJson.version)
   .usage('[options] {source ... | key}')
