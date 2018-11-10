@@ -1,34 +1,28 @@
 import cliProgress from 'cli-progress'
 import chalk from 'chalk'
+import {formatSize, getUnit, getUnitLabel} from './format-size'
 
 export default function pipeStreams(readStream, writeStream, filesize, label) {
   return new Promise(async (resolve) => {
 
-    const sizeMags = ['B', 'KB', 'MB', 'GB']
-    const sizeMag = Math.floor(Math.log(filesize) / Math.log(1024))
-
-    function formatSize(bytes) {
-      if (bytes === 0) {
-        return '0B'
-      }
-      return (bytes / Math.pow(1024, sizeMag)).toFixed(2)
-    }
+    const unit = getUnit(filesize)
+    const unitLabel = getUnitLabel(unit)
 
     const labelWidth = (process.stdout.columns / 3).toFixed()
     label = label.substr(0, labelWidth).padEnd(labelWidth, ' ')
 
     const progress = new cliProgress.Bar({
-      format: `${label} [${chalk.green('{bar}')}] {percentage}% | {duration_formatted} | {transfer} {sizeMag}`,
+      format: `${label} [${chalk.green('{bar}')}] {percentage}% | {duration_formatted} | {transfer}{unitLabel}`,
     }, cliProgress.Presets.legacy)
 
     progress.start(filesize, 0, {
-      transfer: `${formatSize(0)} / ${formatSize(filesize)}`,
-      sizeMag: sizeMags[sizeMag]
+      transfer: `${formatSize(0, {unit})} / ${formatSize(filesize, {unit})}`,
+      unitLabel
     })
 
     readStream.on('data', function(buffer) {
       progress.increment(buffer.length, {
-        transfer: `${formatSize(progress.value)} / ${formatSize(filesize)}`,
+        transfer: `${formatSize(progress.value, {unit})}/${formatSize(filesize, {unit})}`,
       })
     })
 
@@ -36,7 +30,7 @@ export default function pipeStreams(readStream, writeStream, filesize, label) {
 
     writeStream.on('finish', () => {
       progress.update(filesize, {
-        transfer: formatSize(filesize),
+        transfer: formatSize(filesize, {unit}),
       })
       progress.stop()
       resolve()
