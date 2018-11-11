@@ -18,7 +18,7 @@
 
 #### Advantages over plain [dat](github.com/datproject/dat)
 
-`dcp` is designed to have an API that is more reminiscent of `scp` and `rsync`. The standard cli `dat` program requires the additional mental overhead of understanding how the underlying Dat protocol works. `dat` also pollutes the filesystem with metadata files, whereas with `dcp` these are kept in-memory instead.
+`dcp` is designed to have an API that is more reminiscent of `scp` and `rsync`. The standard cli `dat` program requires the additional mental overhead of understanding how the underlying Dat protocol works. `dat` forces you to share a single whole folder, whilst with `dcp` you can copy an arbitrary set of paths. `dat` also pollutes the filesystem with metadata files, whereas with `dcp` these are kept in-memory instead.
 
 ## Example
 
@@ -34,8 +34,8 @@ Total: 2 files (95.00B)
 Paste files on another host with:
 
         dcp 9dc72a82af84b79208fb2fd0c757c52b00a26d081722f9c6f3c6c389d5a4c963
-        
-Upload: 0B (0B/s) 
+
+Upload: 0B (0B/s)
 ```
 
 Host B:
@@ -45,7 +45,7 @@ Host B:
 /foo.txt                [========================================] 100% | 0s | 46.00B
 /bar.txt                [========================================] 100% | 0s | 49.00B%
 
-Total: 2 files (95.00B) 
+Total: 2 files (95.00B)
 ```
 
 ## Development
