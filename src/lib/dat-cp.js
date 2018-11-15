@@ -210,6 +210,18 @@ export default class DatCp {
       return
     }
 
+    // If the file exists and is the same size, assume that it hasn't changed
+    // and skip it.
+    try {
+      const fsStats = await fs.lstat(path)
+      if (stats.size === fsStats.size) {
+        logger.warn(`${path}: File is identical (not copied).`)
+        return
+      }
+    } catch (err) {
+      // File doesn't exist, do nothing.
+    }
+
     const readStream = this.dat.archive.createReadStream(path)
     const writeStream = fs.createWriteStream(path)
     const filesize = stats.size || 1
