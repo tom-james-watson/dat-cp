@@ -20,7 +20,7 @@ export default class DatCp {
       logger.debug('Creating dat archive.')
 
 
-      Dat(storage('.'), {temp: true, ...this.options}, async (err, dat) => {
+      Dat(storage('.'), {...this.options}, async (err, dat) => {
         if (err) {
           logger.debug(err)
           logger.error(`Failed to initialize dat archive.`)
