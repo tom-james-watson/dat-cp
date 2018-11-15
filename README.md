@@ -12,9 +12,7 @@
 
 `dcp` requires zero configuration and is secure, fast, and peer-to-peer.
 
-### Example
-
-![dcp example](./images/example.gif)]
+**WARNING - this is still beta software. Use at your own risk**
 
 ### How `dcp` works
 
@@ -45,38 +43,32 @@ Options:
   -h, --help       output usage information
 ```
 
+### Example
+
+![dcp example](./images/example.gif)
+
 ### Sending files
 
+Pass an arbitrary set of files or directories to `dcp` to be copied. Copy the generated public key and use it to receive the files on a different host.
+
 ```bash
-> dcp foo.txt ../movies/big.mp4 images -r
-foo.txt                                            [========================================] 100% | 0s | 4.00B
-big.mp4                                            [========================================] 100% | 5s | 798.95MB
-images/cat.jpg                                     [========================================] 100% | 0s | 5.58KB
-images/dog.jpg                                     [========================================] 100% | 0s | 431.81KB
-images/landscape.jpg                               [========================================] 100% | 0s | 42.67KB
-
-Total: 6 files (799.41MB)
-
-Paste files on another host with:
-
-        dcp b194683f099a4834553ed972e9e16b748ef3cebdfde8883bbade03bc56ee884b
-
-Upload: 0B (0B/s)
+> dcp [-r] [-n] [-v] files ...
 ```
+
+* Use `-n`/`--dry-run` to see what files will be sent.
+* Use `-r`/`--recursive` to recursively copy files within directories.
+* Use `-v`/`--verbose` to print extra debugging information
 
 ### Receiving files
 
-```bash
-> dcp b194683f099a4834553ed972e9e16b748ef3cebdfde8883bbade03bc56ee884b
-foo.txt                                            [========================================] 100% | 0s | 4.00B
-big.mp4                                            [========================================] 100% | 8s | 798.95MB
-images/cat.jpg                                     [========================================] 100% | 0s | 5.58KB
-images/dog.jpg                                     [========================================] 100% | 0s | 431.81KB
-images/landscape.jpg                               [========================================] 100% | 0s | 42.67KB
+Invoke `dcp` with the generated public key to receive the copied files.
 
-Total: 6 files (799.41MB)
->
+```bash
+> dcp <generated public key>
 ```
+
+* Use `-n`/`--dry-run` to see what files will be received.
+* Use `-v`/`--verbose` to print extra debugging information
 
 ## Development
 
