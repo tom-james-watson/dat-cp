@@ -2,10 +2,12 @@
  * This is lifted pretty much directly from
  * https://github.com/datproject/dat-storage/blob/master/index.js
  *
- * Pretty much the only difference, other than cleaning up a few now uneeded
- * things, is that the metadata and content functions now use ram as their
- * storage UNLESS we are dealing with the actual data, in which case use dat's
- * normal approach.
+ * The main differences are:
+ * - Removed a few things that are not relevant for my use case
+ * - Changed it so that ram is used for everything other than the actual data
+ * - Use path provided as an opt on archive.createWriteStream to set the
+ *   directory when instantiating raf for uploads. This allows you to add files
+ *   to the archive that are not actually within the dir of the archive itself.
  *
  * See https://github.com/datproject/dat-node/issues/222 for more detail.
  * Potentially ram for metadata only should be an option in dat-node.
@@ -104,7 +106,7 @@ function createStorage(archive, dir) {
       name = parsed.base
       directory = parsed.dir
     }
-    return raf(name, {directory, rmdir: true})
+    return raf(name, {directory})
   }
 }
 
