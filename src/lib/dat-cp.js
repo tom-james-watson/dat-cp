@@ -204,10 +204,6 @@ export default class DatCp {
   }
 
   async downloadFile(path, stats) {
-    if (this.program.dryRun) {
-      return
-    }
-
     // If the file exists and is the same size, assume that it hasn't changed
     // and skip it.
     try {
@@ -221,6 +217,10 @@ export default class DatCp {
     }
 
     this.countPath(path, stats)
+
+    if (this.program.dryRun) {
+      return
+    }
 
     const readStream = this.dat.archive.createReadStream(path)
     const writeStream = fs.createWriteStream(path)
