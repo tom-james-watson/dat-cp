@@ -4,6 +4,7 @@ import Dat from 'dat-node'
 import logger from './logger'
 import pipeStreams from './pipe-streams'
 import {formatSize} from './format-size'
+import storage from './storage'
 
 export default class DatCp {
 
@@ -18,7 +19,8 @@ export default class DatCp {
     return new Promise((resolve) => {
       logger.debug('Creating dat archive.')
 
-      Dat('.', {temp: true, ...this.options}, async (err, dat) => {
+
+      Dat(storage('.'), {temp: true, ...this.options}, async (err, dat) => {
         if (err) {
           logger.debug(err)
           logger.error(`Failed to initialize dat archive.`)
@@ -70,7 +72,7 @@ export default class DatCp {
 
     logger.debug('Creating metadata for files:')
     for (const path of paths) {
-      await this.uploadPath(path, '/')
+      await this.uploadPath(path, '')
     }
 
     this.printTotal()
@@ -145,7 +147,7 @@ export default class DatCp {
     const filesize = stats.size || 1
 
     const readStream = fs.createReadStream(path)
-    const writeStream = this.dat.archive.createWriteStream(datPath)
+    const writeStream = this.dat.archive.createWriteStream(datPath, {path})
 
     await pipeStreams(readStream, writeStream, filesize, datPath)
   }
