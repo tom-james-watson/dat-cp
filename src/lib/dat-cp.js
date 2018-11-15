@@ -204,8 +204,6 @@ export default class DatCp {
   }
 
   async downloadFile(path, stats) {
-    this.countPath(path, stats)
-
     if (this.program.dryRun) {
       return
     }
@@ -221,6 +219,8 @@ export default class DatCp {
     } catch (err) {
       // File doesn't exist, do nothing.
     }
+
+    this.countPath(path, stats)
 
     const readStream = this.dat.archive.createReadStream(path)
     const writeStream = fs.createWriteStream(path)
