@@ -8,11 +8,21 @@
 [![npm](https://img.shields.io/node/v/dat-cp.svg)](https://www.npmjs.com/package/dat-cp)
 [![NpmLicense](https://img.shields.io/npm/l/dat-cp.svg)](https://www.npmjs.com/package/dat-cp)
 
-`dcp` copies files between hosts on a network using the peer-to-peer [Dat network](https://datproject.org/). `dcp` can be seen as an alternative to tools like `scp`, removing the need to configure SSH access between hosts. This lets you transfer files between two remote hosts, without you needing to worry about the specifics of how said hosts reach each other.
+`dcp` copies files between hosts on a network using the peer-to-peer [Dat network](https://datproject.org/). `dcp` can be seen as an alternative to tools like `scp`, removing the need to configure SSH access between hosts. This lets you transfer files between two remote hosts, without you needing to worry about the specifics of how said hosts reach each other. 
 
 `dcp` requires zero configuration and is secure, fast, and peer-to-peer.
 
-**WARNING - this is still beta software. Use at your own risk**
+**WARNING - this is not production-ready software. Use at your own risk**
+
+### Use cases
+
+* Sync files between two physical computers on your local network, without needing to set up SSH access.
+* Send files to multiple colleagues - just send the generated public key via chat and they can receive the files on their machine.
+* Copy files to a remote server.
+
+### Example
+
+![dcp example](./images/example.gif)
 
 ### How `dcp` works
 
@@ -42,10 +52,6 @@ Options:
   -v, --verbose    verbose mode - prints extra debugging messages
   -h, --help       output usage information
 ```
-
-### Example
-
-![dcp example](./images/example.gif)
 
 ### Sending files
 
