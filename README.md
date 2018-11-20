@@ -14,6 +14,13 @@
 
 **WARNING - this is not production-ready software. Use at your own risk**
 
+### Contents
+
+- [How dcp works](#how-dcp-works)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Development](#development)
+
 ### Use cases
 
 * Sync files between two physical computers on your local network, without needing to set up SSH access.
