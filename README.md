@@ -10,7 +10,7 @@
 
 `dcp` copies files between hosts on a network using the peer-to-peer [Dat network](https://datproject.org/). `dcp` can be seen as an alternative to tools like `scp`, removing the need to configure SSH access between hosts. This lets you transfer files between two remote hosts, without you needing to worry about the specifics of how said hosts reach each other and regardless of whether hosts are behind NATs. 
 
-`dcp` requires zero configuration and is secure, fast, and peer-to-peer.
+`dcp` requires zero configuration and is secure, [fast](#Performance), and peer-to-peer.
 
 **WARNING - this is not production-ready software. Use at your own risk**
 
@@ -21,11 +21,17 @@
 * Share files between linux/macOS and Windows, which isn't exactly known for great SSH support.
 * Copy files to a remote server.
 
+## Installation
+
+```
+npm i -g dat-cp
+```
+
 ### Example
 
 ![dcp example](./images/example.gif)
 
-### How `dcp` works
+## How `dcp` works
 
 `dcp` will create a dat archive for a specified set of files or directories and, using the generated public key, lets you download said archive from a second host. Any data shared over the network is encrypted using the public key of the archive, meaning data access is limited to those who have access to said key. For more information on how Dat works, you can browse [the docs](https://docs.datproject.org/) or [read their whitepaper](https://github.com/datproject/docs/blob/master/papers/dat-paper.pdf).
 
@@ -33,11 +39,17 @@
 
 `dcp` is designed to have an API that is more reminiscent of `scp` and `rsync`. The standard cli `dat` program requires the additional mental overhead of understanding how the underlying Dat protocol works. `dat` forces you to share a single whole folder, whilst with `dcp` you can copy an arbitrary set of paths. `dat` also pollutes the filesystem with metadata files, whereas with `dcp` these are kept in-memory instead.
 
-## Installation
+### Performance
 
-```
-npm i -g dat-cp
-```
+You can expect `dcp` to transfer at a similar speed to both `rsync` and `scp`.
+
+Here's a benchmark for moving a 396.12MB file from my personal computer to a remote server over my 50mpbs connection.
+
+| Method | Time  |
+|--------|-------|
+| rsync  | 1m07s |
+| scp    | 1m07s |
+| dcp    | 1m10s |
 
 ## Usage
 
