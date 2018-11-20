@@ -21,11 +21,6 @@
 * Share files between linux/macOS and Windows, which isn't exactly known for great SSH support.
 * Copy files to a remote server.
 
-## Installation
-
-```
-npm i -g dat-cp
-```
 
 ### Example
 
@@ -50,6 +45,12 @@ Here's a benchmark for moving a 396.12MB file from my personal computer to a rem
 | rsync  | 1m07s |
 | scp    | 1m07s |
 | dcp    | 1m10s |
+
+## Installation
+
+```
+npm i -g dat-cp
+```
 
 ## Usage
 
