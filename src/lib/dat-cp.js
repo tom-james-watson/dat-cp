@@ -52,8 +52,8 @@ export default class DatCp {
       }, 15000)
 
       const connect = setInterval(() => {
-        for (const c of this.dat.network.connections) {
-          if (c.writable) {
+        for (const conn of this.dat.network.connections) {
+          if (conn.writable) {
             logger.debug('Connected to upload peer.')
             clearInterval(connect)
             clearTimeout(abort)
