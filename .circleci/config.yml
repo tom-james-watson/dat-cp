@@ -52,11 +52,31 @@ jobs:
             NEW_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g')
             echo $NEW_VERSION > new-version
       - persist_to_workspace:
-          root: .
-          paths:
-            - dist
-            - current-version
-            - new-version
+          root: ~/repo
+          paths: .
+
+  publish-npm-package:
+    docker:
+      - image: circleci/node:10.8.0
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Publish npm package
+          command: |
+            CURRENT_VERSION=$(cat current-version)
+            NEW_VERSION=$(cat new-version)
+
+            echo "curr=$CURRENT_VERSION, new=$NEW_VERSION"
+
+            if [ "$CURRENT_VERSION" = "$NEW_VERSION" ]; then
+              echo "Not a new release, exiting"
+              exit
+            fi
+
+            echo "$NPM_RC" > ~/.npmrc
+            npm publish
 
   publish-github-release:
     docker:
@@ -64,12 +84,12 @@ jobs:
     working_directory: ~/repo
     steps:
       - attach_workspace:
-          at: ./workspace
+          at: ~/repo
       - run:
-          name: "Publish Release on GitHub"
+          name: Publish release on github
           command: |
-            CURRENT_VERSION=$(cat workspace/current-version)
-            NEW_VERSION=$(cat workspace/new-version)
+            CURRENT_VERSION=$(cat current-version)
+            NEW_VERSION=$(cat new-version)
 
             echo "curr=$CURRENT_VERSION, new=$NEW_VERSION"
 
@@ -80,7 +100,7 @@ jobs:
 
             go get github.com/tcnksm/ghr
 
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${NEW_VERSION} ./workspace/dist/
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${NEW_VERSION} ./dist/
 
 workflows:
   version: 2
@@ -94,5 +114,8 @@ workflows:
             tags:
               only: /^\d+\.\d+\.\d+$/
       - publish-github-release:
+          requires:
+            - package
+      - publish-npm-package:
           requires:
             - package
