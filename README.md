@@ -8,7 +8,7 @@
 [![npm](https://img.shields.io/node/v/dat-cp.svg)](https://www.npmjs.com/package/dat-cp)
 [![NpmLicense](https://img.shields.io/npm/l/dat-cp.svg)](https://www.npmjs.com/package/dat-cp)
 
-`dcp` copies files between hosts on a network using the peer-to-peer [Dat network](https://datproject.org/). `dcp` can be seen as an alternative to tools like `scp`, removing the need to configure SSH access between hosts. This lets you transfer files between two remote hosts, without you needing to worry about the specifics of how said hosts reach each other and regardless of whether hosts are behind NATs. 
+`dcp` copies files between hosts on a network using the peer-to-peer [Dat network](https://datproject.org/). `dcp` can be seen as an alternative to tools like `scp`, removing the need to configure SSH access between hosts. This lets you transfer files between two remote hosts, without you needing to worry about the specifics of how said hosts reach each other and regardless of whether hosts are behind NATs.
 
 `dcp` requires zero configuration and is secure, [fast](#Performance), and peer-to-peer.
 
@@ -58,6 +58,12 @@ Here's a benchmark for moving a 396.12MB file from my personal computer to a rem
 ```
 npm i -g dat-cp
 ```
+
+### Installing without npm
+
+Alternatively, packaged binaries are available on [the releases page](https://github.com/tom-james-watson/dat-cp/releases). These bundle all dependencies into a single standalone binary.
+
+Simply extract the zip and move the `dcp[.exe]` and `node-64.node` binaries to a folder in your path, e.g. `/usr/local/bin`.
 
 ## Usage
 
