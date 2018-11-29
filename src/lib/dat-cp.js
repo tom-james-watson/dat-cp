@@ -46,6 +46,10 @@ export default class DatCp {
         return resolve()
       }
 
+      this.dat.network.on('connection', () => {
+        logger.debug('Connected to peer.')
+      })
+
       const abort = setTimeout(() => {
         logger.error('Failed to connect to any peers.')
         process.exit(1)
