@@ -9,12 +9,26 @@
     "build": "babel src -d build",
     "cli": "babel-node src/dcp.js",
     "eslint": "node_modules/.bin/eslint src test",
+    "package": "rm -rf builds && npm run pkg && ./package.sh",
+    "pkg": "pkg package.json -o releases/dcp",
     "prepublish": "npm run build",
     "test": "mocha --require babel-core/register --exit && npm run eslint"
   },
   "bin": {
     "dat-cp": "build/dcp.js",
     "dcp": "build/dcp.js"
+  },
+  "pkg": {
+    "assets": [
+      "./node_modules/utp-native/prebuilds/**",
+      "./node_modules/blake2b-wasm/blake2b.wasm",
+      "./node_modules/siphash24/siphash24.wasm"
+    ],
+    "targets": [
+      "node10-linux-x64",
+      "node10-macos-x64",
+      "node10-win-x64"
+    ]
   },
   "babel": {
     "presets": [
@@ -49,9 +63,11 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-1": "^6.24.1",
     "chai": "^4.1.2",
+    "cross-zip-cli": "^1.0.0",
     "eslint": "^5.4.0",
     "eslint-config-tomjwatson": "^0.2.1",
     "mocha": "^5.2.0",
+    "pkg": "^4.3.4",
     "sinon": "^7.1.1"
   }
 }

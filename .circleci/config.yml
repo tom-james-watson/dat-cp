@@ -20,9 +20,61 @@ jobs:
       - run:
           name: Run tests
           command: npm t
+  package:
+    context: org-global
+    docker:
+      - image: circleci/node:10.8.0
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Install dependencies
+          command: npm i
+      - save_cache:
+          paths:
+            - node_modules
+          key: dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Create packages
+          command: npm run package
+      - run:
+          name: Save current version number
+          command: |
+            CURRENT_VERSION=$(npm show dat-cp version)
+      - run:
+          name: Save new version number
+          command: |
+            NEW_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g')
+      - persist_to_workspace:
+          root: .
+          paths:
+            - dist
+  publish-github-release:
+    context: org-global
+    docker:
+      - image: circleci/golang:1.8
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ./workspace
+      - run:
+          name: "Publish Release on GitHub"
+          command: ls -R && ./release.sh
 
 workflows:
   version: 2
   cicd-workflow:
     jobs:
       - tests
+      - package:
+          requires:
+            - tests
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+      - publish-github-release:
+          requires:
+            - package
