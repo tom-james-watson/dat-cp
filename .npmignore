@@ -3,3 +3,8 @@ package-lock.json
 test
 .circleci
 .eslintrc
+dist
+images
+.circleci
+package.sh
+workspace
