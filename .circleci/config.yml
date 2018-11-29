@@ -23,7 +23,6 @@ jobs:
           command: npm t
 
   package:
-    context: global
     docker:
       - image: circleci/node:10.8.0
     working_directory: ~/repo
@@ -46,19 +45,20 @@ jobs:
           name: Save current version number
           command: |
             CURRENT_VERSION=$(npm show dat-cp version)
-            echo $CURRENT_VERSION
+            echo $CURRENT_VERSION > current-version
       - run:
           name: Save new version number
           command: |
             NEW_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g')
-            echo $NEW_VERSION
+            echo $NEW_VERSION > new-version
       - persist_to_workspace:
           root: .
           paths:
             - dist
+            - current-version
+            - new-version
 
   publish-github-release:
-    context: global
     docker:
       - image: circleci/golang:1.8
     working_directory: ~/repo
@@ -68,6 +68,9 @@ jobs:
       - run:
           name: "Publish Release on GitHub"
           command: |
+            CURRENT_VERSION=$(cat workspace/current-version)
+            NEW_VERSION=$(cat workspace/new-version)
+
             echo "curr=$CURRENT_VERSION, new=$NEW_VERSION"
 
             if [ "$CURRENT_VERSION" = "$NEW_VERSION" ]; then
