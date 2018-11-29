@@ -185,14 +185,29 @@ export default class DatCp {
     })
   }
 
-  async download() {
-    const paths = await this.readdir('/')
+  download() {
+    return new Promise((resolve) => {
+      const abort = setTimeout(() => {
+        logger.error('Failed to download metadata from peer.')
+        process.exit(1)
+      }, 15000)
 
-    for (const path of paths) {
-      await this.downloadPath(path)
-    }
+      const readRoot = setInterval(async () => {
+        const paths = await this.readdir('/')
 
-    this.printTotal()
+        if (paths.length !== 0) {
+          clearInterval(readRoot)
+          clearTimeout(abort)
+
+          for (const path of paths) {
+            await this.downloadPath(path)
+          }
+
+          this.printTotal()
+          resolve()
+        }
+      }, 300)
+    })
   }
 
   async downloadPath(path) {
