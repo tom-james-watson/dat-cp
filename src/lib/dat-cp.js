@@ -46,21 +46,19 @@ export default class DatCp {
         return resolve()
       }
 
-      this.dat.network.on('connection', () => {
-        logger.debug('Connected to peer.')
-      })
-
       const abort = setTimeout(() => {
         logger.error('Failed to connect to any peers.')
         process.exit(1)
       }, 15000)
 
       const connect = setInterval(() => {
-        if (this.dat.stats.peers.complete > 0) {
-          logger.debug('Connected to upload peer.')
-          clearInterval(connect)
-          clearTimeout(abort)
-          resolve()
+        for (const c of this.dat.network.connections) {
+          if (c.writable) {
+            logger.debug('Connected to upload peer.')
+            clearInterval(connect)
+            clearTimeout(abort)
+            resolve()
+          }
         }
       }, 300)
     })
