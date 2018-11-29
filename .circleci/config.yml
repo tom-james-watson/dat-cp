@@ -53,10 +53,7 @@ jobs:
             echo $NEW_VERSION > new-version
       - persist_to_workspace:
           root: ~/repo
-          paths:
-            - dist
-            - current-version
-            - new-version
+          paths: .
 
   publish-npm-package:
     docker:
