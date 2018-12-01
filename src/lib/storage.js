@@ -3,8 +3,8 @@
  * https://github.com/datproject/dat-storage/blob/master/index.js
  *
  * The main differences are:
- * - Removed a few things that are not relevant for my use case
- * - Changed it so that ram is used for everything other than the actual data
+ * - Removed a few things that are not relevant for my use case.
+ * - Changed it so that ram is used for everything other than the actual data.
  * - Use path provided as an opt on archive.createWriteStream to set the
  *   directory when instantiating raf for uploads. This allows you to add files
  *   to the archive that are not actually within the dir of the archive itself.
@@ -14,6 +14,7 @@
  */
 import path from 'path'
 import raf from 'random-access-file'
+import rafReadOnly from './raf-readonly'
 import ram from 'random-access-memory'
 import multi from 'multi-random-access'
 import messages from 'append-tree/messages'
@@ -100,13 +101,13 @@ function createStorage(archive, dir) {
   }
 
   function file(name, opts={}) {
-    let directory = '.'
     if (opts.path) {
       const parsed = path.parse(opts.path)
       name = parsed.base
-      directory = parsed.dir
+      return rafReadOnly(name, {directory: parsed.dir})
+    } else {
+      return raf(name, {directory: '.'})
     }
-    return raf(name, {directory})
   }
 }
 
