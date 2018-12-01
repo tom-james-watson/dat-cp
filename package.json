@@ -46,10 +46,10 @@
   "author": "Tom Watson <tom@tomjwatson.com>",
   "license": "MIT",
   "dependencies": {
-    "append-tree": "^2.4.4",
-    "chalk": "^2.4.1",
-    "cli-progress": "^2.1.0",
-    "commander": "^2.19.0",
+    "append-tree": "2.4.4",
+    "chalk": "2.4.1",
+    "cli-progress": "2.1.0",
+    "commander": "2.19.0",
     "dat-node": "^3.5.13",
     "hyperdrive": "^9.14.0",
     "multi-random-access": "^2.1.1",
@@ -57,17 +57,17 @@
     "random-access-memory": "^3.0.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-eslint": "^8.2.6",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-stage-1": "^6.24.1",
-    "chai": "^4.1.2",
-    "cross-zip-cli": "^1.0.0",
-    "eslint": "^5.4.0",
-    "eslint-config-tomjwatson": "^0.2.1",
-    "mocha": "^5.2.0",
-    "pkg": "^4.3.4",
-    "sinon": "^7.1.1"
+    "babel-cli": "6.26.0",
+    "babel-core": "6.26.3",
+    "babel-eslint": "8.2.6",
+    "babel-preset-env": "1.7.0",
+    "babel-preset-stage-1": "6.24.1",
+    "chai": "4.1.2",
+    "cross-zip-cli": "1.0.0",
+    "eslint": "5.4.0",
+    "eslint-config-tomjwatson": "0.2.1",
+    "mocha": "5.2.0",
+    "pkg": "4.3.4",
+    "sinon": "7.1.1"
   }
 }
