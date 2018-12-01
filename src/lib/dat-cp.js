@@ -19,10 +19,9 @@ export default class DatCp {
     return new Promise((resolve) => {
       logger.debug('Creating dat archive.')
 
-
       Dat(storage('.'), {...this.options}, async (err, dat) => {
         if (err) {
-          logger.debug(err)
+          logger.error(err.toString())
           logger.error(`Failed to initialize dat archive.`)
           process.exit(1)
         }
@@ -176,7 +175,7 @@ export default class DatCp {
     return new Promise((resolve) => {
       this.dat.archive.mkdir(path, (err) => {
         if (err) {
-          logger.debug(err)
+          logger.error(err.toString())
           logger.error(`${path}: Failed to create directory in dat archive.`)
           process.exit(1)
         }
@@ -298,7 +297,7 @@ export default class DatCp {
     return new Promise((resolve, reject) => {
       this.dat.archive.readdir(path, async (err, paths) => {
         if (err) {
-          logger.debug(err)
+          logger.error(err.toString())
           logger.error(`${path}: Failed to read from dat archive.`)
           process.exit(1)
         }
@@ -311,7 +310,7 @@ export default class DatCp {
     return new Promise((resolve, reject) => {
       this.dat.archive.stat(path, (err, stats) => {
         if (err) {
-          logger.debug(err)
+          logger.error(err.toString())
           logger.error(`${path}: Failed to get stats from dat archive.`)
           process.exit(1)
         }

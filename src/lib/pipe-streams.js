@@ -1,6 +1,7 @@
 import cliProgress from 'cli-progress'
 import chalk from 'chalk'
 import {formatSize, getUnit, getUnitLabel} from './format-size'
+import logger from './logger'
 
 export default function pipeStreams(readStream, writeStream, filesize, label) {
   return new Promise(async (resolve) => {
@@ -26,6 +27,13 @@ export default function pipeStreams(readStream, writeStream, filesize, label) {
       })
     })
 
+    readStream.on('error', (err) => {
+      progress.stop()
+      logger.error(err.toString())
+      logger.error('Failed to read file.')
+      process.exit(1)
+    })
+
     readStream.pipe(writeStream)
 
     writeStream.on('finish', () => {
@@ -34,6 +42,13 @@ export default function pipeStreams(readStream, writeStream, filesize, label) {
       })
       progress.stop()
       resolve()
+    })
+
+    writeStream.on('error', (err) => {
+      progress.stop()
+      logger.error(err.toString())
+      logger.error('Failed to write file to archive.')
+      process.exit(1)
     })
   })
 }
