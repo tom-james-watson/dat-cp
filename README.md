@@ -78,6 +78,16 @@ Options:
   -n, --dry-run    show what files would have been copied
   -v, --verbose    verbose mode - prints extra debugging messages
   -h, --help       output usage information
+
+Example:
+
+    Send files from host A:
+
+        > dcp foo.txt bar.txt
+
+    Receive files on host B:
+
+        > dcp <generated public key>
 ```
 
 ### Sending files

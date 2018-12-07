@@ -8,11 +8,11 @@ import pkgJson from '../package.json'
 
 program.on('--help', function() {
   console.log('\nExample:')
-  console.log('\n    Host A:')
+  console.log('\n    Send files from host A:')
   console.log(`
         > dcp foo.txt bar.txt
   `)
-  console.log('    Host B:')
+  console.log('    Receive files on host B:')
   console.log(`
         > dcp <generated public key>
   `)
