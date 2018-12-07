@@ -8,14 +8,11 @@ const sandbox = sinon.createSandbox()
 describe('Send', function() {
 
   beforeEach(() => {
-    this.timeout(10000)
-
     this.exitSpy = sandbox.spy()
     this.debugSpy = sandbox.spy()
     this.infoSpy = sandbox.spy()
     this.warnSpy = sandbox.spy()
     this.errorSpy = sandbox.spy()
-    this.pipeSpy = sandbox.spy()
 
     sandbox.stub(process, 'exit').callsFake((...args) => {
       this.exitSpy(...args)
@@ -25,8 +22,6 @@ describe('Send', function() {
     sandbox.stub(logger, 'info').callsFake(this.infoSpy)
     sandbox.stub(logger, 'warn').callsFake(this.warnSpy)
     sandbox.stub(logger, 'error').callsFake(this.errorSpy)
-
-    // const child = spawn('test/fixtures/simple/hello.txt')
   })
 
   afterEach(() => {
