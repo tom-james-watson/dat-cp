@@ -26,7 +26,7 @@
 * Sync files between two physical computers on your local network, without needing to set up SSH access.
 * Send files to multiple colleagues - just send the generated public key via chat and they can receive the files on their machine.
 * Share files between linux/macOS and Windows, which isn't exactly known for great SSH support.
-* Copy files to a remote server.
+* Copy files to a remote server when you have shell access but not SSH, e.g. a kubernetes pod.
 
 
 ### Example
