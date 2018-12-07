@@ -68,7 +68,7 @@ Simply extract the zip and move the `dcp[.exe]` and `node-64.node` binaries to a
 ## Usage
 
 ```
-Usage: dcp [options] {source ... | key}
+Usage: dcp [options] {files ... | key}
 
 Dat Copy - remote file copy, powered by the dat protocol.
 

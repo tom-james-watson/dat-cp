@@ -20,7 +20,7 @@ program.on('--help', function() {
 
 program
   .version(pkgJson.version)
-  .usage('[options] {source ... | key}')
+  .usage('[options] {files ... | key}')
   .description('Dat Copy - remote file copy, powered by the dat protocol.')
   .option('-r, --recursive', 'recursively copy directories')
   .option('-n, --dry-run', 'show what files would have been copied')
