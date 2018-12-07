@@ -107,7 +107,7 @@ Pass an arbitrary set of files or directories to `dcp` to be copied. Copy the ge
 Invoke `dcp` with the generated public key to receive the copied files.
 
 ```bash
-> dcp <generated public key>
+> dcp [-n] [-v] <generated public key>
 ```
 
 * Use `-n`/`--dry-run` to see what files will be received.
