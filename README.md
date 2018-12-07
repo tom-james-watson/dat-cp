@@ -30,7 +30,7 @@
 * Send files to multiple colleagues - just send the generated public key via chat and they can receive the files on their machine.
 * Sync files between two physical computers on your local network, without needing to set up SSH access.
 * Easily send files to a friend without needing to create a zip and upload it the cloud.
-* Copy files to a remote server when you have shell access but not SSH, e.g. a kubernetes pod.
+* Copy files to a remote server when you have shell access but not SSH, for example on a kubernetes pod.
 * Share files between linux/macOS and Windows, which isn't exactly known for great SSH support.
 
 ## How `dcp` works
