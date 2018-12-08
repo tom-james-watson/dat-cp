@@ -5,6 +5,7 @@ import logger from './logger'
 import pipeStreams from './pipe-streams'
 import {formatSize} from './format-size'
 import storage from './storage'
+import prompt from './prompt'
 
 export default class DatCp {
 
@@ -103,7 +104,7 @@ export default class DatCp {
     }
 
     if (stats.isFile()) {
-      this.countPath(path, stats)
+      this.countPath(path, stats, this.program.dryRun)
       return
     }
 
@@ -122,7 +123,7 @@ export default class DatCp {
     }
 
     if (path[path.length - 1] !== '/') {
-      this.countPath(path, stats)
+      this.countPath(path, stats, this.program.dryRun)
     }
 
     const dirPaths = await fs.readdir(path)
@@ -184,7 +185,7 @@ export default class DatCp {
     })
   }
 
-  download() {
+  download(listOnly=false) {
     return new Promise((resolve) => {
       const abort = setTimeout(() => {
         logger.error('Failed to download metadata from peer.')
@@ -199,27 +200,33 @@ export default class DatCp {
           clearTimeout(abort)
 
           for (const path of paths) {
-            await this.downloadPath(path)
+            await this.downloadPath(path, listOnly)
           }
 
-          this.printTotal()
+          if (
+            this.program.dryRun ||
+            (!listOnly && this.files > 30) ||
+            this.files === 0
+          ) {
+            this.printTotal()
+          }
           resolve()
         }
       }, 300)
     })
   }
 
-  async downloadPath(path) {
+  async downloadPath(path, listOnly) {
     const stats = await this.stat(path)
 
     if (stats.isDirectory()) {
-      await this.downloadDir(path, stats)
+      await this.downloadDir(path, stats, listOnly)
     } else {
-      await this.downloadFile(path, stats)
+      await this.downloadFile(path, stats, listOnly)
     }
   }
 
-  async downloadFile(path, stats) {
+  async downloadFile(path, stats, listOnly) {
     // If the file exists and is the same size, assume that it hasn't changed
     // and skip it.
     try {
@@ -232,9 +239,9 @@ export default class DatCp {
       // File doesn't exist, do nothing.
     }
 
-    this.countPath(path, stats)
+    this.countPath(path, stats, listOnly)
 
-    if (this.program.dryRun) {
+    if (listOnly) {
       return
     }
 
@@ -245,8 +252,8 @@ export default class DatCp {
     await pipeStreams(readStream, writeStream, filesize, path)
   }
 
-  async downloadDir(path, stats) {
-    if (!this.program.dryRun) {
+  async downloadDir(path, stats, listOnly) {
+    if (!listOnly) {
       // lstat will throw an error if a path does not exist, so rely on that to
       // know that the dir does not already exist. If the path exists and is not
       // a directory, error.
@@ -261,16 +268,16 @@ export default class DatCp {
       }
     }
 
-    this.countPath(path, stats)
+    this.countPath(path, stats, listOnly)
 
     const dirPaths = await this.readdir(path)
 
     for (const dirPath of dirPaths) {
-      await this.downloadPath(nodePath.join(path, dirPath))
+      await this.downloadPath(nodePath.join(path, dirPath), listOnly)
     }
   }
 
-  countPath(path, stats) {
+  countPath(path, stats, listPath) {
     if (path === '.') {
       return
     }
@@ -278,7 +285,7 @@ export default class DatCp {
     this.files += 1
     this.totalSize += stats.size
 
-    if (!this.program.dryRun) {
+    if (!listPath) {
       return
     }
 
@@ -291,6 +298,25 @@ export default class DatCp {
 
   printTotal() {
     logger.info(`\nTotal: ${this.files} files (${formatSize(this.totalSize)})`)
+  }
+
+  resetCounts() {
+    this.files = 0
+    this.totalSize = 0
+  }
+
+  async downloadPrompt() {
+    const answer = await prompt(
+      `\nDownload ${this.files} files (${formatSize(this.totalSize)})? [Y/n] `
+    )
+
+    const proceed = ['yes', 'y', ''].includes(answer.trim().toLowerCase())
+
+    if (proceed) {
+      logger.info()
+    }
+
+    return proceed
   }
 
   readdir(path) {

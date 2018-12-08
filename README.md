@@ -76,6 +76,7 @@ Options:
   -V, --version    output the version number
   -r, --recursive  recursively copy directories
   -n, --dry-run    show what files would have been copied
+  -y, --yes        automatically download without a prompt
   -v, --verbose    verbose mode - prints extra debugging messages
   -h, --help       output usage information
 
@@ -98,8 +99,8 @@ Pass an arbitrary set of files or directories to `dcp` to be copied. Copy the ge
 > dcp [-r] [-n] [-v] files ...
 ```
 
-* Use `-n`/`--dry-run` to see what files will be sent.
-* Use `-r`/`--recursive` to recursively copy files within directories.
+* Use `-n`/`--dry-run` to see what files will be sent
+* Use `-r`/`--recursive` to recursively copy files within directories
 * Use `-v`/`--verbose` to print extra debugging information
 
 ### Receiving files
@@ -107,11 +108,12 @@ Pass an arbitrary set of files or directories to `dcp` to be copied. Copy the ge
 Invoke `dcp` with the generated public key to receive the copied files.
 
 ```bash
-> dcp [-n] [-v] <generated public key>
+> dcp [-n] [-v] [-y] <generated public key>
 ```
 
-* Use `-n`/`--dry-run` to see what files will be received.
+* Use `-n`/`--dry-run` to see what files will be received
 * Use `-v`/`--verbose` to print extra debugging information
+* Use `-y`/`--yes` to skip the download prompt
 
 ## Development
 
