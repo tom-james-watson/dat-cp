@@ -1,8 +1,10 @@
+import Dat from './lib/dat'
 import DatCp from './lib/dat-cp'
 
 export default async function receive(key, program) {
-  const datCp = new DatCp(program, {key, sparse: true})
-  await datCp.connect()
+  const dat = await Dat({key, sparse: true})
+
+  const datCp = new DatCp(dat, program)
 
   if (!program.skipPrompt) {
     await datCp.download(true)

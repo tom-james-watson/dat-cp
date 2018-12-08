@@ -1,67 +1,17 @@
 import fs from './fs'
 import nodePath from 'path'
-import Dat from 'dat-node'
 import logger from './logger'
 import pipeStreams from './pipe-streams'
 import {formatSize} from './format-size'
-import storage from './storage'
 import prompt from './prompt'
 
 export default class DatCp {
 
-  constructor(program, options = {}) {
+  constructor(dat, program) {
+    this.dat = dat
     this.program = program
-    this.options = options
     this.files = 0
     this.totalSize = 0
-  }
-
-  connect() {
-    return new Promise((resolve) => {
-      logger.debug('Creating dat archive.')
-
-      Dat(storage('.'), {...this.options}, async (err, dat) => {
-        if (err) {
-          logger.error(err.toString())
-          logger.error(`Failed to initialize dat archive.`)
-          process.exit(1)
-        }
-
-        this.dat = dat
-        dat.trackStats()
-
-        await this.joinNetwork()
-        resolve()
-      })
-    })
-  }
-
-  joinNetwork() {
-    return new Promise((resolve, reject) => {
-      logger.debug('Connecting to dat network.')
-
-      this.dat.joinNetwork()
-
-      if (!this.options.key) {
-        return resolve()
-      }
-
-      const abort = setTimeout(() => {
-        logger.error('Failed to connect to any peers.')
-        process.exit(1)
-      }, 15000)
-
-      const connect = setInterval(() => {
-        for (const conn of this.dat.network.connections) {
-          if (conn.writable) {
-            logger.debug('Connected to upload peer.')
-            clearInterval(connect)
-            clearTimeout(abort)
-            resolve()
-          }
-        }
-      }, 300)
-    })
   }
 
   async upload(paths) {
