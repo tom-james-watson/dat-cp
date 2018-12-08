@@ -24,6 +24,7 @@ program
   .description('Dat Copy - remote file copy, powered by the dat protocol.')
   .option('-r, --recursive', 'recursively copy directories')
   .option('-n, --dry-run', 'show what files would have been copied')
+  .option('--skip-prompt', 'automatically download without a prompt')
   .option('-v, --verbose', 'verbose mode - prints extra debugging messages')
   .parse(process.argv)
 

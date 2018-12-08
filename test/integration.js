@@ -20,7 +20,7 @@ describe('Integration', function() {
     this.timeout(10000)
 
     const key = await spawnSend('test/fixtures/simple/hello.txt')
-    await spawnRcv(key)
+    await spawnRcv(`${key} --skip-prompt`)
 
     expect(getOutFiles()).to.deep.equal(['hello.txt'])
   })
@@ -41,7 +41,7 @@ describe('Integration', function() {
     this.timeout(10000)
 
     const key = await spawnSend('test/fixtures/dirs -r')
-    await spawnRcv(key)
+    await spawnRcv(`${key} --skip-prompt`)
 
     expect(getOutFiles()).to.deep.equal(['dirs'])
     expect(getOutFiles('dirs')).to.deep.equal(['dir1', 'dir2'])
@@ -66,7 +66,7 @@ describe('Integration', function() {
     this.timeout(10000)
 
     const key = await spawnSend('test/fixtures/dirs -r')
-    await spawnRcv(key)
+    await spawnRcv(`${key} --skip-prompt`)
 
     expect(getOutFiles()).to.deep.equal(['dirs'])
     expect(getOutFiles('dirs')).to.deep.equal(['dir1', 'dir2'])
@@ -74,7 +74,7 @@ describe('Integration', function() {
     expect(getOutFiles('dirs/dir2')).to.deep.equal(['dir3', 'foo.txt'])
     expect(getOutFiles('dirs/dir2/dir3')).to.deep.equal(['fizz.txt'])
 
-    await spawnRcv(key)
+    await spawnRcv(`${key} --skip-prompt`)
 
     expect(getOutFiles()).to.deep.equal(['dirs'])
     expect(getOutFiles('dirs')).to.deep.equal(['dir1', 'dir2'])
@@ -87,7 +87,7 @@ describe('Integration', function() {
     this.timeout(10000)
 
     const key = await spawnSend('test/fixtures/dirs/ -r')
-    await spawnRcv(key)
+    await spawnRcv(`${key} --skip-prompt`)
 
     expect(getOutFiles()).to.deep.equal(['dir1', 'dir2'])
     expect(getOutFiles('dir1')).to.deep.equal(['hello.txt'])
@@ -99,7 +99,7 @@ describe('Integration', function() {
     this.timeout(10000)
 
     const key = await spawnSend('test/fixtures/dirs/dir2/foo.txt test/fixtures/dirs/dir2/dir3')
-    await spawnRcv(key)
+    await spawnRcv(`${key} --skip-prompt`)
 
     expect(getOutFiles()).to.deep.equal(['foo.txt'])
   })
@@ -108,7 +108,7 @@ describe('Integration', function() {
     this.timeout(10000)
 
     const key = await spawnSend('test/fixtures/complex -r')
-    await spawnRcv(key)
+    await spawnRcv(`${key} --skip-prompt`)
 
     expect(getOutFiles()).to.deep.equal(['complex'])
     expect(getOutFiles('complex')).to.deep.equal(['hello.txt'])
