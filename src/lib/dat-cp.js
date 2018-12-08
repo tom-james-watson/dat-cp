@@ -7,9 +7,9 @@ import prompt from './prompt'
 
 export default class DatCp {
 
-  constructor(dat, program) {
+  constructor(dat, options) {
     this.dat = dat
-    this.program = program
+    this.options = options
     this.files = 0
     this.totalSize = 0
   }
@@ -17,7 +17,7 @@ export default class DatCp {
   async upload(paths) {
     await this.ensurePathsValid(paths)
 
-    if (this.program.dryRun) {
+    if (this.options.dryRun) {
       this.printTotal()
       process.exit(0)
     }
@@ -54,7 +54,7 @@ export default class DatCp {
     }
 
     if (stats.isFile()) {
-      this.countPath(path, stats, this.program.dryRun)
+      this.countPath(path, stats)
       return
     }
 
@@ -67,13 +67,13 @@ export default class DatCp {
   }
 
   async ensureDirValid(path, stats) {
-    if (!this.program.recursive) {
+    if (!this.options.recursive) {
       logger.warn(`${path}: Is a directory (not copied).`)
       return
     }
 
     if (path[path.length - 1] !== '/') {
-      this.countPath(path, stats, this.program.dryRun)
+      this.countPath(path, stats)
     }
 
     const dirPaths = await fs.readdir(path)
@@ -105,7 +105,7 @@ export default class DatCp {
   }
 
   async uploadDir(path, datPath) {
-    if (!this.program.recursive) {
+    if (!this.options.recursive) {
       return
     }
 
@@ -135,7 +135,7 @@ export default class DatCp {
     })
   }
 
-  download(listOnly=false) {
+  download() {
     return new Promise((resolve) => {
       const abort = setTimeout(() => {
         logger.error('Failed to download metadata from peer.')
@@ -149,16 +149,9 @@ export default class DatCp {
           clearTimeout(abort)
 
           for (const path of paths) {
-            await this.downloadPath(path, listOnly)
+            await this.downloadPath(path)
           }
 
-          if (
-            this.program.dryRun ||
-            (!listOnly && this.files > 30) ||
-            this.files === 0
-          ) {
-            this.printTotal()
-          }
           resolve()
         } else {
           setTimeout(readRoot, 300)
@@ -169,17 +162,17 @@ export default class DatCp {
     })
   }
 
-  async downloadPath(path, listOnly) {
+  async downloadPath(path) {
     const stats = await this.stat(path)
 
     if (stats.isDirectory()) {
-      await this.downloadDir(path, stats, listOnly)
+      await this.downloadDir(path, stats)
     } else {
-      await this.downloadFile(path, stats, listOnly)
+      await this.downloadFile(path, stats)
     }
   }
 
-  async downloadFile(path, stats, listOnly) {
+  async downloadFile(path, stats) {
     // If the file exists and is the same size, assume that it hasn't changed
     // and skip it.
     try {
@@ -192,9 +185,9 @@ export default class DatCp {
       // File doesn't exist, do nothing.
     }
 
-    this.countPath(path, stats, listOnly)
+    this.countPath(path, stats)
 
-    if (listOnly) {
+    if (this.options.dryRun) {
       return
     }
 
@@ -205,8 +198,8 @@ export default class DatCp {
     await pipeStreams(readStream, writeStream, filesize, path)
   }
 
-  async downloadDir(path, stats, listOnly) {
-    if (!listOnly) {
+  async downloadDir(path, stats) {
+    if (!this.options.dryRun) {
       // lstat will throw an error if a path does not exist, so rely on that to
       // know that the dir does not already exist. If the path exists and is not
       // a directory, error.
@@ -221,16 +214,16 @@ export default class DatCp {
       }
     }
 
-    this.countPath(path, stats, listOnly)
+    this.countPath(path, stats)
 
     const dirPaths = await this.readdir(path)
 
     for (const dirPath of dirPaths) {
-      await this.downloadPath(nodePath.join(path, dirPath), listOnly)
+      await this.downloadPath(nodePath.join(path, dirPath))
     }
   }
 
-  countPath(path, stats, listPath) {
+  countPath(path, stats) {
     if (path === '.') {
       return
     }
@@ -238,7 +231,7 @@ export default class DatCp {
     this.files += 1
     this.totalSize += stats.size
 
-    if (!listPath) {
+    if (!this.options.dryRun) {
       return
     }
 
@@ -251,11 +244,6 @@ export default class DatCp {
 
   printTotal() {
     logger.info(`\nTotal: ${this.files} files (${formatSize(this.totalSize)})`)
-  }
-
-  resetCounts() {
-    this.files = 0
-    this.totalSize = 0
   }
 
   async downloadPrompt() {

@@ -1,29 +1,33 @@
 import Dat from './lib/dat'
 import DatCp from './lib/dat-cp'
 
-export default async function receive(key, program) {
+export default async function receive(key, options) {
   const dat = await Dat({key, sparse: true})
 
-  const datCp = new DatCp(dat, program)
+  if (!options.skipPrompt) {
+    const datCpDryRun = new DatCp(dat, {...options, dryRun: true})
 
-  if (!program.skipPrompt) {
-    await datCp.download(true)
-  }
+    await datCpDryRun.download()
 
-  if (program.dryRun || (!program.skipPrompt && datCp.files === 0)) {
-    process.exit()
-  }
+    if (options.dryRun || datCpDryRun.files === 0) {
+      datCpDryRun.printTotal()
+      process.exit()
+    }
 
-  if (!program.skipPrompt) {
-    const proceed = await datCp.downloadPrompt()
+    const proceed = await datCpDryRun.downloadPrompt()
 
     if (!proceed) {
       process.exit()
     }
   }
 
-  datCp.resetCounts()
-  await datCp.download()
+  const datCpDownload = new DatCp(dat, {...options})
+
+  await datCpDownload.download()
+
+  if (options.skipPrompt || datCpDownload.files > 30) {
+    datCpDownload.printTotal()
+  }
 
   process.exit()
 }
