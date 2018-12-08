@@ -4,15 +4,15 @@ export default async function receive(key, program) {
   const datCp = new DatCp(program, {key, sparse: true})
   await datCp.connect()
 
-  if (!program.yes) {
+  if (!program.skipPrompt) {
     await datCp.download(true)
   }
 
-  if (program.dryRun || (!program.yes && datCp.files === 0)) {
+  if (program.dryRun || (!program.skipPrompt && datCp.files === 0)) {
     process.exit()
   }
 
-  if (!program.yes) {
+  if (!program.skipPrompt) {
     const proceed = await datCp.downloadPrompt()
 
     if (!proceed) {
