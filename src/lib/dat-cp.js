@@ -192,11 +192,10 @@ export default class DatCp {
         process.exit(1)
       }, 15000)
 
-      const readRoot = setInterval(async () => {
+      const readRoot = async () => {
         const paths = await this.readdir('/')
 
         if (paths.length !== 0) {
-          clearInterval(readRoot)
           clearTimeout(abort)
 
           for (const path of paths) {
@@ -211,8 +210,12 @@ export default class DatCp {
             this.printTotal()
           }
           resolve()
+        } else {
+          setTimeout(readRoot, 300)
         }
-      }, 300)
+      }
+
+      readRoot()
     })
   }
 
