@@ -1,6 +1,6 @@
 {
   "name": "dat-cp",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "description": "Dat Copy - remote file copy, powered by the dat protocol",
   "engines": {
     "node": ">=6.0.0"
@@ -44,6 +44,9 @@
     ]
   },
   "author": "Tom Watson <tom@tomjwatson.com>",
+  "repository": "tom-james-watson/dat-cp",
+  "homepage": "https://github.com/tom-james-watson/dat-cp",
+  "bugs": "https://github.com/tom-james-watson/dat-cp/issues",
   "license": "MIT",
   "dependencies": {
     "append-tree": "2.4.4",
