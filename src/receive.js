@@ -2,7 +2,7 @@ import Dat from './lib/dat'
 import DatCp from './lib/dat-cp'
 
 export default async function receive(key, options) {
-  const dat = await Dat({key, sparse: true})
+  const dat = await Dat(key, {sparse: true})
 
   if (!options.skipPrompt) {
     const datCpDryRun = new DatCp(dat, {...options, dryRun: true})

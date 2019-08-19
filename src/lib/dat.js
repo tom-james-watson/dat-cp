@@ -1,4 +1,6 @@
 import Dat from 'dat-node'
+const SDK = require('dat-sdk')
+const {Hyperdrive} = SDK()
 import logger from './logger'
 import storage from './storage'
 
@@ -22,31 +24,28 @@ function waitForUploadPeer(dat) {
   })
 }
 
-export default function(options = {}) {
+export default function(key, options = {}) {
   return new Promise((resolve, reject) => {
-
     logger.debug('Creating dat archive.')
 
-    Dat(storage('.'), {...options}, async (err, dat) => {
-      if (err) {
-        logger.error(err.toString())
-        logger.error(`Failed to initialize dat archive.`)
-        process.exit(1)
-      }
+    const dat = Hyperdrive(key, {storage: storage('.'), ...options})
 
-      dat.trackStats()
+    dat.ready(() => {
+      // dat.trackStats()
+
+      resolve(dat)
 
       logger.debug('Connecting to dat network.')
 
-      dat.joinNetwork()
+      // dat.joinNetwork()
 
-      if (!options.key) {
-        return resolve(dat)
-      }
+      // if (!options.key) {
+      //   return resolve(dat)
+      // }
 
-      await waitForUploadPeer(dat)
+      // await waitForUploadPeer(dat)
 
-      resolve(dat)
+      // resolve(dat)
     })
   })
 }

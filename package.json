@@ -54,6 +54,7 @@
     "cli-progress": "2.1.0",
     "commander": "2.19.0",
     "dat-node": "^3.5.15",
+    "dat-sdk": "^0.2.1",
     "hyperdrive": "^9.16.0",
     "multi-random-access": "^2.1.1",
     "random-access-file": "^2.1.3",

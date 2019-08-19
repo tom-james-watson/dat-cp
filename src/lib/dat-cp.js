@@ -99,7 +99,7 @@ export default class DatCp {
     const filesize = stats.size || 1
 
     const readStream = fs.createReadStream(path)
-    const writeStream = this.dat.archive.createWriteStream(datPath, {path})
+    const writeStream = this.dat.createWriteStream(datPath, {path})
 
     await pipeStreams(readStream, writeStream, filesize, datPath)
   }
@@ -124,7 +124,7 @@ export default class DatCp {
 
   mkdir(path) {
     return new Promise((resolve) => {
-      this.dat.archive.mkdir(path, (err) => {
+      this.dat.mkdir(path, (err) => {
         if (err) {
           logger.error(err.toString())
           logger.error(`${path}: Failed to create directory in dat archive.`)
@@ -191,7 +191,7 @@ export default class DatCp {
       return
     }
 
-    const readStream = this.dat.archive.createReadStream(path)
+    const readStream = this.dat.createReadStream(path)
     const writeStream = fs.createWriteStream(path)
     const filesize = stats.size || 1
 
@@ -262,7 +262,7 @@ export default class DatCp {
 
   readdir(path) {
     return new Promise((resolve, reject) => {
-      this.dat.archive.readdir(path, async (err, paths) => {
+      this.dat.readdir(path, async (err, paths) => {
         if (err) {
           logger.error(err.toString())
           logger.error(`${path}: Failed to read from dat archive.`)
@@ -275,7 +275,7 @@ export default class DatCp {
 
   stat(path) {
     return new Promise((resolve, reject) => {
-      this.dat.archive.stat(path, (err, stats) => {
+      this.dat.stat(path, (err, stats) => {
         if (err) {
           logger.error(err.toString())
           logger.error(`${path}: Failed to get stats from dat archive.`)

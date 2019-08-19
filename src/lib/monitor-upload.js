@@ -14,9 +14,9 @@ export default function monitorUploads(dat) {
   })
 
   setInterval(() => {
-    progress.update(0, {
-      uploadTotal: formatSize(dat.stats.network.uploadTotal),
-      uploadSpeed: formatSize(dat.stats.network.uploadSpeed),
-    })
+    // progress.update(0, {
+    //   uploadTotal: formatSize(dat.stats.network.uploadTotal),
+    //   uploadSpeed: formatSize(dat.stats.network.uploadSpeed),
+    // })
   }, 300)
 }
