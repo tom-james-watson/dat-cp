@@ -63,7 +63,7 @@ npm i -g dat-cp
 
 Alternatively, packaged binaries are available on [the releases page](https://github.com/tom-james-watson/dat-cp/releases). These bundle all dependencies into a single standalone binary.
 
-Simply extract the zip and move the `dcp[.exe]` and `node-64.node` binaries to a folder in your path, e.g. `/usr/local/bin`.
+Simply extract the zip and move the `dcp[.exe]` binary to a folder in your path, e.g. `/usr/local/bin`.
 
 ## Usage
 
