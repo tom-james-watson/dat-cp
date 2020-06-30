@@ -49,16 +49,17 @@
   "bugs": "https://github.com/tom-james-watson/dat-cp/issues",
   "license": "MIT",
   "dependencies": {
-    "append-tree": "2.4.4",
-    "chalk": "2.4.1",
-    "cli-progress": "2.1.0",
-    "commander": "2.19.0",
+    "append-tree": "^2.4.4",
+    "chalk": "^4.0.0",
+    "cli-progress": "^3.8.2",
+    "commander": "^5.1.0",
     "dat-node": "^3.5.15",
     "hyperdrive": "^9.16.0",
+    "hyperswarm": "^2.14.0",
     "multi-random-access": "^2.1.1",
-    "random-access-file": "^2.1.3",
+    "random-access-file": "^2.1.4",
     "random-access-memory": "^3.1.1",
-    "random-access-storage": "^1.4.0"
+    "random-access-storage": "^1.4.1"
   },
   "devDependencies": {
     "babel-cli": "6.26.0",
@@ -71,7 +72,7 @@
     "eslint": "5.4.0",
     "eslint-config-tomjwatson": "0.2.1",
     "mocha": "5.2.0",
-    "pkg": "4.3.4",
+    "pkg": "^4.4.8",
     "sinon": "7.1.1"
   }
 }
