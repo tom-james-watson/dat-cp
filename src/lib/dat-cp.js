@@ -135,6 +135,17 @@ export default class DatCp {
     })
   }
 
+  async setDownloadDest(path){
+    try{
+      await fs.lstat(path);
+    }
+    catch(err){
+      await this.downloadDestPathPrompt(path);    
+    }
+    
+    process.chdir(path);
+  }
+
   download() {
     return new Promise((resolve) => {
       const abort = setTimeout(() => {
@@ -259,6 +270,19 @@ export default class DatCp {
 
     return proceed
   }
+
+  async downloadDestPathPrompt(path) {
+    const answer = await prompt(
+      `\nThe path ${path} dont exist, would you like create it? [Y/n] `
+    )
+    const proceed = ['yes', 'y', ''].includes(answer.trim().toLowerCase())
+      if (proceed) {
+        return await fs.mkdir(path);
+      }
+      process.exit(1)
+  
+  }
+
 
   readdir(path) {
     return new Promise((resolve, reject) => {

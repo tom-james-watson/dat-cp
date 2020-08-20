@@ -38,7 +38,7 @@ if (program.verbose) {
 }
 
 if (program.args[0].length === 64) {
-  receive(program.args[0], program)
+  receive(program.args, program)
 } else {
   send(program.args, program)
 }
