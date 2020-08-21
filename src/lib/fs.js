@@ -24,7 +24,7 @@ function lstat(path) {
 
 function mkdir(path) {
   return new Promise((resolve, reject) => {
-    fs.mkdir(path, (err) => {
+    fs.mkdir(path, {recursive: true}, (err) => {
       if (err) {
         return reject(err)
       }

@@ -3,15 +3,15 @@ import DatCp from './lib/dat-cp'
 
 export default async function receive(args, options) {
 
-  let key = args[0];
-  let path = args[1] ? args[1] : '.';
+  let key = args[0]
+  let path = args[1] ? args[1] : '.'
 
   const dat = await Dat({key, sparse: true})
 
   if (!options.skipPrompt) {
     const datCpDryRun = new DatCp(dat, {...options, dryRun: true})
 
-    await datCpDryRun.setDownloadDest(path);
+    await datCpDryRun.setDownloadDest(path)
     await datCpDryRun.download()
 
     if (options.dryRun || datCpDryRun.files === 0) {
@@ -27,7 +27,7 @@ export default async function receive(args, options) {
   }
 
   const datCpDownload = new DatCp(dat, {...options})
-
+  await datCpDownload.setDownloadDest(path)
   await datCpDownload.download()
 
   if (options.skipPrompt || datCpDownload.files > 30) {

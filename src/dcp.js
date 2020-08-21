@@ -14,7 +14,7 @@ program.on('--help', function() {
   `)
   console.log('    Receive files on host B:')
   console.log(`
-        > dcp <generated public key>
+        > dcp <generated public key> [dest]
   `)
 })
 
