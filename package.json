@@ -70,7 +70,7 @@
     "cross-zip-cli": "1.0.0",
     "eslint": "5.4.0",
     "eslint-config-tomjwatson": "0.2.1",
-    "mocha": "^8.0.1",
+    "mocha": "^10.1.0",
     "pkg": "^4.4.8",
     "sinon": "7.1.1"
   }
