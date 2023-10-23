@@ -135,6 +135,15 @@ export default class DatCp {
     })
   }
 
+  async setDownloadDest(path) {
+    try {
+      await fs.lstat(path)
+    } catch (err) {
+      await fs.mkdir(path)
+    }
+    process.chdir(path)
+  }
+
   download() {
     return new Promise((resolve) => {
       const abort = setTimeout(() => {

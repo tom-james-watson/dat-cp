@@ -88,7 +88,7 @@ Example:
 
     Receive files on host B:
 
-        > dcp <generated public key>
+        > dcp <generated public key> [dest]
 ```
 
 ### Sending files
@@ -108,7 +108,7 @@ Pass an arbitrary set of files or directories to `dcp` to be copied. Copy the ge
 Invoke `dcp` with the generated public key to receive the copied files.
 
 ```bash
-> dcp [-n] [-v] [--skip-prompt] <generated public key>
+> dcp [-n] [-v] [--skip-prompt] <generated public key> [dest]
 ```
 
 * Use `-n`/`--dry-run` to see what files will be received

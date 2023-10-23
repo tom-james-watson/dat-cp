@@ -114,4 +114,26 @@ describe('Integration', function() {
     expect(getOutFiles('complex')).to.deep.equal(['hello.txt'])
   })
 
+  it('should save the file in the dest path', async function () {
+    this.timeout(10000)
+    const key = await spawnSend('test/fixtures/simple/hello.txt')
+    await spawnRcv(`--skip-prompt ${key} dir1`)
+
+    expect(getOutFiles('dir1')).to.deep.equal(['hello.txt'])
+  })
+
+  it('should create the dest path and save files/dir', async function () {
+    this.timeout(10000)
+    const key = await spawnSend('test/fixtures/dirs -r')
+    await spawnRcv(`${key} --skip-prompt root/test/`)
+
+    expect(getOutFiles()).to.deep.equal(['root'])
+    expect(getOutFiles('root')).to.deep.equal(['test'])
+    expect(getOutFiles('root/test')).to.deep.equal(['dirs'])
+    expect(getOutFiles('root/test/dirs')).to.deep.equal(['dir1', 'dir2'])
+    expect(getOutFiles('root/test/dirs/dir1')).to.deep.equal(['hello.txt'])
+    expect(getOutFiles('root/test/dirs/dir2')).to.deep.equal(['dir3', 'foo.txt'])
+    expect(getOutFiles('root/test/dirs/dir2/dir3')).to.deep.equal(['fizz.txt'])
+  })
+
 })
